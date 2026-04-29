@@ -12,4 +12,4 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
       - uses: google-github-actions/setup-gcloud@v2
-      - run: gcloud builds submit --config cloudbuild.yaml --project=chunav-saathi-494717 --substitutions=_GIT_SHA=${{ github.sha }}
+      - run: gcloud builds submit --config cloudbuild.yaml --project=chunav-saathi-494717 --substitutions=_GIT_SHA=${{ github.sha }} --async
