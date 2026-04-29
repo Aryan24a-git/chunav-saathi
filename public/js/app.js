@@ -1,53 +1,34 @@
 const FLASHCARD_DATA = [
   { id: 1, topic: 'ECI', question: 'What is the full form of ECI?', answer: 'Election Commission of India', difficulty: 'easy' },
-  { id: 2, topic: 'ECI', question: 'Under which Article of the Constitution is ECI established?', answer: 'Article 324', difficulty: 'medium' },
-  { id: 3, topic: 'MCC', question: 'What is MCC?', answer: 'Model Code of Conduct', difficulty: 'easy' },
+  { id: 2, topic: 'ECI', question: 'Under which Article is ECI established?', answer: 'Article 324', difficulty: 'medium' },
+  { id: 3, topic: 'MCC', question: 'When does MCC come into effect?', answer: 'Immediately after the election schedule is announced', difficulty: 'easy' },
   { id: 4, topic: 'EVM', question: 'What is the full form of VVPAT?', answer: 'Voter Verifiable Paper Audit Trail', difficulty: 'medium' },
-  { id: 5, topic: 'Seats', question: 'How many elected seats are there in Lok Sabha?', answer: '543', difficulty: 'easy' },
-  { id: 6, topic: 'Seats', question: 'What is the maximum strength of Rajya Sabha?', answer: '250 (Current: 245)', difficulty: 'medium' },
-  { id: 7, topic: 'ECI', question: 'What is the term of the Chief Election Commissioner?', answer: '6 years or until the age of 65, whichever is earlier', difficulty: 'hard' },
-  { id: 8, topic: 'History', question: 'When was the first general election held in India?', answer: '1951-52', difficulty: 'medium' },
-  { id: 9, topic: 'Forms', question: 'Which form is used for new voter registration?', answer: 'Form 6', difficulty: 'medium' },
-  { id: 10, topic: 'NOTA', question: 'When was NOTA first introduced in India?', answer: '2013', difficulty: 'hard' },
-  { id: 11, topic: 'EVM', question: 'Which company manufactures EVMs in India?', answer: 'BEL (Bharat Electronics Limited) and ECIL (Electronics Corporation of India Limited)', difficulty: 'hard' },
-  { id: 12, topic: 'ECI', question: 'Who was the first Chief Election Commissioner of India?', answer: 'Sukumar Sen', difficulty: 'hard' },
-  { id: 13, topic: 'Age', question: 'What is the minimum age to vote in India?', answer: '18 years', difficulty: 'easy' },
-  { id: 14, topic: 'Age', question: 'What is the minimum age to contest Lok Sabha elections?', answer: '25 years', difficulty: 'medium' },
-  { id: 15, topic: 'Age', question: 'What is the minimum age to contest Rajya Sabha elections?', answer: '30 years', difficulty: 'medium' },
-  { id: 16, topic: 'MCC', question: 'When does the Model Code of Conduct come into effect?', answer: 'Immediately after the election schedule is announced by ECI', difficulty: 'medium' },
-  { id: 17, topic: 'Symbols', question: 'Who allotts symbols to political parties?', answer: 'Election Commission of India', difficulty: 'easy' },
-  { id: 18, topic: 'Voting', question: 'What is the maximum number of votes an EVM can record?', answer: '2,000 votes', difficulty: 'hard' },
-  { id: 19, topic: 'EVM', question: 'How many candidates can a single EVM (Balloting Unit) cater to?', answer: '16 candidates (up to 24 units can be linked for 384 candidates)', difficulty: 'hard' },
-  { id: 20, topic: 'Ink', question: 'What chemical is used in the indelible ink?', answer: 'Silver Nitrate (AgNO3)', difficulty: 'hard' },
-  { id: 21, topic: 'History', question: 'In which year was the voting age lowered from 21 to 18?', answer: '1988 (61st Amendment Act)', difficulty: 'medium' },
-  { id: 22, topic: 'Voters', question: 'What is "Epic"?', answer: 'Elector\'s Photo Identity Card', difficulty: 'easy' },
-  { id: 23, topic: 'ECI', question: 'Who appoints the Election Commissioners?', answer: 'The President of India', difficulty: 'medium' },
-  { id: 24, topic: 'Rajya Sabha', question: 'How many members of Rajya Sabha are nominated by the President?', answer: '12 members', difficulty: 'medium' },
-  { id: 25, topic: 'Polling', question: 'What is a "Tendered Vote"?', answer: 'A vote cast when someone else has already voted in a voter\'s name', difficulty: 'hard' },
-  { id: 26, topic: 'Counting', question: 'Which form is used for the declaration of results?', answer: 'Form 21C', difficulty: 'hard' },
-  { id: 27, topic: 'Forms', question: 'Which form is used for name deletion from electoral rolls?', answer: 'Form 7', difficulty: 'medium' },
-  { id: 28, topic: 'Forms', question: 'Which form is used for correction of entries in electoral rolls?', answer: 'Form 8', difficulty: 'medium' },
-  { id: 29, topic: 'ECI', question: 'Where is the headquarters of ECI located?', answer: 'Nirvachan Sadan, New Delhi', difficulty: 'easy' },
-  { id: 30, topic: 'Voters', question: 'Can an NRI vote in Indian elections?', answer: 'Yes, if they are registered in the electoral roll of their home constituency', difficulty: 'medium' }
+  { id: 5, topic: 'Seats', question: 'How many elected seats are in Lok Sabha?', answer: '543', difficulty: 'easy' },
+  { id: 6, topic: 'Registration', question: 'Which form is for new voter registration?', answer: 'Form 6', difficulty: 'medium' },
+  { id: 7, topic: 'History', question: 'When was the first general election in India?', answer: '1951-52', difficulty: 'medium' },
+  { id: 8, topic: 'Age', question: 'What is the minimum voting age?', answer: '18 years', difficulty: 'easy' },
+  { id: 9, topic: 'NOTA', question: 'When was NOTA introduced?', answer: '2013', difficulty: 'medium' },
+  { id: 10, topic: 'EVM', question: 'Are EVMs connected to the internet?', answer: 'No, they are standalone machines', difficulty: 'easy' }
 ];
 
 const TIMELINE_DATA = [
-  { stage: "Announcement", icon: "📢", days: "Day 0", description: "Election Commission announces schedule, Model Code of Conduct kicks in immediately", keyFact: "MCC makes it binding on all political parties and candidates", learnMore: "mcc" },
-  { stage: "Nomination", icon: "📝", days: "Day 1-14", description: "Candidates file nomination papers with Returning Officer...", keyFact: "Security deposit: ₹25,000 for Lok Sabha, ₹10,000 for state assembly" },
-  { stage: "Scrutiny", icon: "🔍", days: "Day 15", description: "Returning Officer examines nomination papers for validity", keyFact: "Can be rejected if candidate disqualified under RPA 1951" },
-  { stage: "Withdrawal", icon: "↩️", days: "Day 17", description: "Candidates may withdraw nominations by 3pm on withdrawal day", keyFact: "Symbol allotment happens after withdrawal deadline" },
-  { stage: "Campaign", icon: "🗣️", days: "Day 17 to Day -2", description: "Active campaigning period. No campaigning 48 hours before polling", keyFact: "The 48-hour silence period is called the Campaign Silence Period" },
-  { stage: "Poll Day", icon: "🗳️", days: "Polling Day", description: "Voting happens 7am to 6pm. Voters use EVM and VVPAT machines", keyFact: "Voters get indelible ink mark on left index finger" },
-  { stage: "Counting", icon: "🔢", days: "Count Day", description: "Votes counted at counting centers under ECI supervision", keyFact: "EVMs are stored in strong rooms with multi-party seals" },
-  { stage: "Result", icon: "🏆", days: "Result Day", description: "Winners declared, certificates issued by Returning Officer", keyFact: "Requires simple majority in Lok Sabha to form government" }
+  { stage: "Announcement", icon: "📢", days: "Day 0", description: "ECI sets dates and enforces Model Code of Conduct.", keyFact: "MCC begins immediately upon announcement.", learnMore: "Announcement stage" },
+  { stage: "Nomination", icon: "📝", days: "Day 1-14", description: "Candidates submit forms and security deposits.", keyFact: "Form 26 affidavit discloses assets and criminal records.", learnMore: "Nomination stage" },
+  { stage: "Scrutiny", icon: "🔍", days: "Day 15", description: "Officials examine papers for eligibility.", keyFact: "Incomplete papers lead to rejection.", learnMore: "Scrutiny and Withdrawal" },
+  { stage: "Campaign", icon: "🗣️", days: "15+ Days", description: "Parties conduct outreach under MCC rules.", keyFact: "Campaigning stops 48 hours before polls.", learnMore: "Campaigning stage" },
+  { stage: "Polling", icon: "🗳️", days: "Poll Day", description: "Voters cast votes using EVMs at booths.", keyFact: "Indelible ink prevents duplicate voting.", learnMore: "Polling Day" },
+  { stage: "Counting", icon: "🔢", days: "Result Day", description: "Votes are counted under strict supervision.", keyFact: "VVPAT slips are partially verified.", learnMore: "Counting" }
 ];
+
 
 const TRANSLATIONS = {
   en: {
     navAssistant: "Assistant", navQuiz: "Quiz", navFlashcard: "Flashcards", navTimeline: "Timeline",
     chatPlaceholder: "Ask about Indian elections...",
     btnSend: "Send", btnLang: "हिं/EN",
-    suggest1: "How do I register to vote?", suggest2: "What is Model Code of Conduct?", suggest3: "Difference between Lok Sabha and Rajya Sabha?",
+    suggest1: "Apply for new Voter ID", 
+    suggest2: "Process of voting step by step", 
+    suggest3: "Report code of conduct violation",
     quizLoading: "Quiz loading...", scorePerfect: "🏆 Perfect! You're an election expert!",
     scoreGood: "✅ Good knowledge! Keep learning!", scoreLow: "📚 Let's study more — try Flashcards!",
     btnRetry: "Try Again", btnStudy: "Study Flashcards",
@@ -55,10 +36,15 @@ const TRANSLATIONS = {
     timelineAsk: "Ask Assistant about this →"
   },
   hi: {
+    timelineAsk: "Ask Assistant about this →"
+  },
+  hi: {
     navAssistant: "सहायक", navQuiz: "प्रश्नोत्तरी", navFlashcard: "फ्लैशकार्ड", navTimeline: "समयरेखा",
     chatPlaceholder: "भारतीय चुनावों के बारे में पूछें...",
     btnSend: "भेजें", btnLang: "EN/हिं",
-    suggest1: "वोट डालने के लिए पंजीकरण कैसे करें?", suggest2: "आचार संहिता क्या है?", suggest3: "लोकसभा और राज्यसभा में क्या अंतर है?",
+    suggest1: "नया वोटर आईडी कैसे बनाएं?", 
+    suggest2: "वोट डालने की प्रक्रिया", 
+    suggest3: "शिकायत कैसे दर्ज करें?",
     quizLoading: "प्रश्नोत्तरी लोड हो रही है...", scorePerfect: "🏆 शानदार! आप चुनाव विशेषज्ञ हैं!",
     scoreGood: "✅ अच्छा ज्ञान! सीखते रहें!", scoreLow: "📚 चलिए और अध्ययन करते हैं — फ्लैशकार्ड आज़माएं!",
     btnRetry: "पुनः प्रयास करें", btnStudy: "फ्लैशकार्ड पढ़ें",
@@ -116,19 +102,18 @@ const App = {
     document.getElementById('send-btn').textContent = t.btnSend;
     document.getElementById('lang-toggle').textContent = t.btnLang;
     
-    // Update initial message if history is empty
-    if (this.chatHistory.length === 0) {
-        const initialBubble = document.querySelector('.bubble-bot');
-        if (initialBubble) {
-            initialBubble.textContent = this.language === 'hi' 
-                ? "🗳️ नमस्ते! मैं आपका चुनाव साथी हूँ। आज मैं भारतीय चुनावों के बारे में आपकी क्या सहायता कर सकता हूँ?"
-                : "🗳️ Namaste! I am your Chunav Saathi. How can I help you today regarding Indian elections?";
-        }
-    }
+
 
     // Refresh Suggestions
     if (this.currentPage === 'assistant') {
         this.Chat.renderSuggestions([t.suggest1, t.suggest2, t.suggest3]);
+        this.Chat.populateCommonQuestions();
+    }
+    
+    // Update Dropdown Placeholder
+    const select = document.getElementById('common-questions-select');
+    if (select) {
+        select.options[0].text = this.language === 'hi' ? "एक सामान्य प्रश्न चुनें..." : "Select a Common Question...";
     }
   },
 
@@ -142,12 +127,90 @@ const App = {
         }
       });
       document.getElementById('send-btn').addEventListener('click', () => this.sendMessage(input.value));
-      document.getElementById('tts-btn').addEventListener('click', () => {
-        const lastBotMsg = Array.from(document.querySelectorAll('.bubble-bot')).pop();
-        if (lastBotMsg) this.speakText(lastBotMsg.innerText.replace('🗳️ ', ''));
+
+
+      document.getElementById('common-questions-select').addEventListener('change', (e) => {
+        if (e.target.value) {
+          this.sendMessage(e.target.value);
+          e.target.selectedIndex = 0; // Reset after sending
+        }
       });
       
-      this.renderSuggestions([TRANSLATIONS.en.suggest1, TRANSLATIONS.en.suggest2, TRANSLATIONS.en.suggest3]);
+      this.populateCommonQuestions();
+
+      // Welcome message logic
+      if (App.chatHistory.length === 0) {
+        const welcomeMsg = App.language === 'hi' 
+          ? "🗳️ **नमस्ते! मैं चुनाव साथी हूँ**, आपका चुनाव सहायक। आज आप क्या जानना चाहेंगे?"
+          : "🗳️ **Namaste! I am Chunav Saathi**, your Election Assistant. What would you like to know today?";
+        
+        // Use a flag to prevent double message
+        if (!this.welcomeSent) {
+          this.addBubble('bot', welcomeMsg);
+          this.renderSuggestions([
+            App.language === 'hi' ? "वोटर आईडी के लिए आवेदन" : "How to apply for Voter ID",
+            App.language === 'hi' ? "मतदान की प्रक्रिया" : "Process of voting",
+            App.language === 'hi' ? "नोटा (NOTA) क्या है?" : "What is NOTA?"
+          ]);
+          this.welcomeSent = true;
+        }
+      }
+
+    },
+
+    populateCommonQuestions() {
+      const select = document.getElementById('common-questions-select');
+      const questionsEN = [
+        "What is democracy?",
+        "Who conducts elections in India?",
+        "What is the minimum voting age in India?",
+        "How to apply for a new voter ID online?",
+        "What documents are required for voter ID?",
+        "Can I apply for voter ID at 17?",
+        "How to check voter ID status?",
+        "Can NRIs vote in India?",
+        "Can prisoners vote?",
+        "How to find my polling booth?",
+        "What are the stages in Indian elections?",
+        "Is EVM secure?",
+        "What is NOTA?",
+        "How to report election violations?",
+        "What is cVIGIL app?",
+        "What is SVEEP?"
+      ];
+
+      const questionsHI = [
+        "लोकतंत्र क्या है?",
+        "भारत में चुनाव कौन कराता है?",
+        "भारत में मतदान की न्यूनतम आयु क्या है?",
+        "नए वोटर आईडी के लिए ऑनलाइन आवेदन कैसे करें?",
+        "वोटर आईडी के लिए कौन से दस्तावेज चाहिए?",
+        "क्या मैं 17 साल की उम्र में वोटर आईडी के लिए आवेदन कर सकता हूँ?",
+        "वोटर आईडी का स्टेटस कैसे चेक करें?",
+        "क्या एनआरआई (NRI) भारत में वोट दे सकते हैं?",
+        "क्या कैदी वोट दे सकते हैं?",
+        "मेरा पोलिंग बूथ कहां है?",
+        "भारतीय चुनावों के चरण क्या हैं?",
+        "क्या ईवीएम सुरक्षित है?",
+        "नोटा (NOTA) क्या है?",
+        "चुनाव उल्लंघन की रिपोर्ट कैसे करें?",
+        "cVIGIL ऐप क्या है?",
+        "SVEEP क्या है?"
+      ];
+      
+      const questions = this.language === 'hi' ? questionsHI : questionsEN;
+      
+      // Preserve the first (placeholder) option
+      const placeholder = select.options[0];
+      select.innerHTML = '';
+      select.appendChild(placeholder);
+
+      questions.forEach(q => {
+        const opt = document.createElement('option');
+        opt.value = q;
+        opt.textContent = q;
+        select.appendChild(opt);
+      });
     },
 
     async sendMessage(text) {
@@ -160,22 +223,39 @@ const App = {
       App.chatHistory.push({ role: "user", parts: [{ text }] });
 
       try {
+        const isNext = text.toLowerCase().includes('next step') || text.toLowerCase().includes('अगला');
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, history: App.chatHistory, lang: App.language })
+          body: JSON.stringify({ 
+            message: isNext ? "next" : text, 
+            history: App.chatHistory, 
+            lang: App.language 
+          })
         });
+
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || `Server Error (${res.status})`);
+        }
+
         const data = await res.json();
         
-        loading.remove();
-        this.addBubble('bot', data.reply);
+        if (loading) loading.remove();
+        this.addBubble('bot', data.reply, data.progress);
         App.chatHistory.push({ role: "model", parts: [{ text: data.reply }] });
         
-        const suggestions = this.getSuggestions(data.reply);
+        const suggestions = data.suggestions && data.suggestions.length > 0 
+          ? data.suggestions 
+          : this.getSuggestions(data.reply);
+          
         this.renderSuggestions(suggestions);
       } catch (e) {
-        loading.remove();
-        this.addBubble('bot', "Connection error. Please check your internet.");
+        if (loading) loading.remove();
+        const errorMsg = e.message.includes('Too many requests') 
+          ? (App.language === 'hi' ? "बहुत अधिक अनुरोध। कृपया एक मिनट प्रतीक्षा करें।" : "Too many requests. Please wait a minute.")
+          : (App.language === 'hi' ? "कनेक्शन त्रुटि। कृपया अपना इंटरनेट जांचें।" : "Connection error. Please check your internet.");
+        this.addBubble('bot', errorMsg);
       }
       
       const container = document.getElementById('chat-messages');
@@ -204,10 +284,27 @@ const App = {
       });
     },
 
-    addBubble(role, text) {
+    addBubble(role, text, progress = null) {
       const div = document.createElement('div');
       div.className = role === 'user' ? 'bubble-user' : 'bubble-bot';
-      div.textContent = (role === 'bot' ? '🗳️ ' : '') + text;
+      
+      let content = (role === 'bot' ? '🗳️ ' : '') + text;
+      // Convert markdown-style bold to HTML
+      content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      content = content.replace(/\n/g, '<br>');
+      
+      div.innerHTML = content;
+
+      if (progress) {
+        const progDiv = document.createElement('div');
+        progDiv.className = 'chat-progress';
+        progDiv.innerHTML = `
+          <div class="progress-label">Step ${progress.current} of ${progress.total}</div>
+          <div class="progress-track"><div class="progress-fill" style="width: ${(progress.current/progress.total)*100}%"></div></div>
+        `;
+        div.appendChild(progDiv);
+      }
+
       document.getElementById('chat-messages').appendChild(div);
       return div;
     },
@@ -221,20 +318,7 @@ const App = {
       return div;
     },
 
-    async speakText(text) {
-      const btn = document.getElementById('tts-btn');
-      btn.style.opacity = '0.5';
-      try {
-        const res = await fetch(`/api/tts?text=${encodeURIComponent(text)}`);
-        const data = await res.json();
-        const player = document.getElementById('tts-player');
-        player.src = `data:audio/mp3;base64,${data.audioContent}`;
-        player.play();
-        player.onended = () => btn.style.opacity = '1';
-      } catch (e) {
-        btn.style.opacity = '1';
-      }
-    }
+
   },
 
   Quiz: {
@@ -281,7 +365,7 @@ const App = {
       this.state.timeLeft = 20;
       document.getElementById('quiz-timer').textContent = `${this.state.timeLeft}s`;
       
-      document.getElementById('quiz-progress-inner').style.width = `${(this.state.current / 5) * 100}%`;
+      document.getElementById('quiz-progress-inner').style.width = `${(this.state.current / this.state.questions.length) * 100}%`;
       document.getElementById('quiz-question').textContent = q.question;
       
       const options = document.getElementById('quiz-options');
@@ -335,7 +419,7 @@ const App = {
 
       screen.innerHTML = `
         <h2>${msg}</h2>
-        <p style="font-size: 3rem; margin: 1rem 0;">${this.state.score} / 5</p>
+        <p style="font-size: 3rem; margin: 1rem 0;">${this.state.score} / ${this.state.questions.length}</p>
         <div style="display:flex; gap:1rem; justify-content:center;">
           <button class="btn-primary" onclick="App.Quiz.reset()">${t.btnRetry}</button>
           <button class="btn-secondary" onclick="App.showPage('flashcard')">${t.btnStudy}</button>
@@ -447,8 +531,13 @@ const App = {
     askAboutStage(stageName) {
       App.showPage('assistant');
       const input = document.getElementById('chat-input');
-      input.value = `Tell me more about the ${stageName} stage in Indian elections.`;
-      setTimeout(() => App.Chat.sendMessage(input.value), 300);
+      const query = this.language === 'hi' 
+        ? `भारतीय चुनावों में ${stageName} चरण के बारे में और बताएं।`
+        : `Tell me more about the ${stageName} stage in Indian elections.`;
+      
+      input.value = query;
+      // Also add the Hindi variations to knowledgeBase if not present
+      setTimeout(() => App.Chat.sendMessage(query), 300);
     }
   }
 };

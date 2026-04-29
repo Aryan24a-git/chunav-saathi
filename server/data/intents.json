@@ -1,0 +1,50 @@
+{
+  "voter_registration": {
+    "keywords": ["register", "apply", "form 6", "new voter", "voter id card", "how to make voter id", "registration process"],
+
+    "steps": [
+      "Gather your documents: Aadhaar card (Age/Address proof) and a passport size photo.",
+      "Visit voters.eci.gov.in or open the Voter Helpline App.",
+      "Fill out 'Form 6' with your details and upload the scanned documents.",
+      "Submit the application and save the 'Reference ID' for tracking.",
+      "Wait for field verification by the Booth Level Officer (BLO).",
+      "Receive your physical EPIC card via post after approval."
+    ],
+    "followup": "Would you like to know how to track your status?"
+  },
+  "voting_process": {
+    "keywords": ["how to vote", "polling booth", "process", "step by step", "process of voting"],
+
+    "steps": [
+      "Go to your designated Polling Booth with your EPIC card or a valid ID.",
+      "The first polling official will check your name on the electoral roll.",
+      "The second official will mark your finger with indelible ink and give you a slip.",
+      "The third official will take the slip and enable the Balloting Unit.",
+      "Enter the voting compartment, press the blue button on the EVM next to your candidate's name.",
+      "Wait for the beep and check the VVPAT slip behind the glass for verification."
+    ],
+    "followup": "Do you need help finding your polling booth?"
+  },
+  "mcc_violation": {
+    "keywords": ["report", "violation", "illegal", "money", "alcohol", "bribe"],
+    "steps": [
+      "Download the 'cVIGIL' app from the Play Store or App Store.",
+      "Select the type of violation (e.g., money distribution, hate speech).",
+      "Capture a photo or record a short video of the incident.",
+      "Submit the report. Your GPS location is automatically attached.",
+      "Track the status. ECI teams usually arrive within 100 minutes."
+    ],
+    "followup": "Would you like to know more about MCC rules?"
+  },
+  "correction_voter_id": {
+    "keywords": ["correction", "change address", "update", "wrong name", "form 8"],
+    "steps": [
+      "Login to the Voters' Service Portal or Voter Helpline App.",
+      "Select 'Form 8' for Correction of Entries/Shifting of Residence.",
+      "Choose what you want to correct (Name, Age, Address, Photo, etc.).",
+      "Upload the supporting document for the correction (e.g., birth certificate for age).",
+      "Submit and track using the Reference ID."
+    ],
+    "followup": "Do you need to know which documents are accepted?"
+  }
+}

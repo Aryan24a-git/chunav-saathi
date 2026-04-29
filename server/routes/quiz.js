@@ -11,9 +11,24 @@ router.post('/quiz/generate', async (req, res) => {
       // Simulate network delay
       await new Promise(resolve => setTimeout(resolve, 800));
 
+      // Map frontend topic names to backend categories
+      const categoryMap = {
+        'ECI': 'Basics',
+        'MCC': 'Stages & Laws',
+        'EVM/VVPAT': 'EVM & Tech',
+        'Forms': 'Voter ID',
+        'NOTA': 'Basics',
+        'Constituencies': 'Basics',
+        'History': 'Basics',
+        'Rights': 'Basics'
+      };
+
+      const category = categoryMap[topic] || 'Basics';
+      const questions = mockQuiz[category] || mockQuiz['Basics'];
+
       return res.json({
-        quiz: mockQuiz,
-        topic: topic || "General",
+        quiz: questions,
+        topic: category,
         generatedAt: new Date().toISOString()
       });
   } catch (error) {
