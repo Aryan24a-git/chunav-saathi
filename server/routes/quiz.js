@@ -1,40 +1,53 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
-const RAPIDAPI_HOST = process.env.RAPIDAPI_HOST;
-const RAPIDAPI_PATH = process.env.RAPIDAPI_PATH || '/';
-const RAPIDAPI_URL = `https://${RAPIDAPI_HOST}${RAPIDAPI_PATH}`;
-
-const { QUIZ_DATA, HINDI_QUIZ_DATA } = require('../data/mockQuiz');
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const quizModel = genAI.getGenerativeModel({ 
+  model: 'gemini-flash-latest' 
+});
 
 router.post('/generate', async (req, res) => {
-  const { topic, lang } = req.body;
+  const { topic } = req.body;
   
   if (!topic) {
     return res.status(400).json({ error: 'Topic is required' });
   }
 
+  const prompt = `Generate 5 multiple choice questions about ${topic} 
+  in Indian elections. Return ONLY valid JSON array, 
+  no markdown, no backticks. Format:
+  [{"question":"...","options":["A","B","C","D"],
+  "correctIndex":0,"explanation":"..."}]`;
+
   try {
-    // Select the correct dataset based on language
-    const currentKB = (lang === 'hi') ? HINDI_QUIZ_DATA : QUIZ_DATA;
+    let result = await quizModel.generateContent(prompt);
+    let text = result.response.text();
     
-    // Check if topic exists in mock data, otherwise fallback
-    const quizData = currentKB[topic] || currentKB["ECI"];
-    
-    if (!quizData || quizData.length === 0) {
-      return res.status(404).json({ error: "Quiz topic not found" });
+    // Clean up text in case of accidental markdown
+    text = text.replace(/```json|```/g, "").trim();
+
+    try {
+      const questions = JSON.parse(text);
+      return res.json({ 
+        quiz: questions, 
+        topic, 
+        generatedAt: new Date().toISOString() 
+      });
+    } catch (parseError) {
+      console.warn("JSON Parse fail, retrying once...");
+      // Simple retry
+      result = await quizModel.generateContent(prompt);
+      text = result.response.text().replace(/```json|```/g, "").trim();
+      const questions = JSON.parse(text);
+      return res.json({ 
+        quiz: questions, 
+        topic, 
+        generatedAt: new Date().toISOString() 
+      });
     }
-
-    // Shuffle and pick 5 questions (if more exist)
-    const shuffled = [...quizData].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 5);
-
-    // Send back to frontend
-    res.json({ quiz: selected });
   } catch (error) {
-    console.error("Mock Quiz Error:", error.message);
+    console.error("Quiz Generation Error:", error.message);
     res.status(500).json({ error: "Failed to generate quiz", details: error.message });
   }
 });
