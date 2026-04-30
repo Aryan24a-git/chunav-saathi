@@ -30,7 +30,7 @@ const englishKnowledgeBase = [
   },
   {
     q: "how to apply for voter id",
-    a: "Apply online using Form 6 or visit Electoral Office → Submit documents → Verification → Approval",
+    a: "Step 1: Apply online using Form 6 or visit Electoral Office\nStep 2: Submit required documents\nStep 3: Verification by Booth Level Officer\nStep 4: Final approval and EPIC generation",
     keywords: ["apply", "id", "card", "process"],
     category: "registration"
   },
@@ -66,7 +66,7 @@ const englishKnowledgeBase = [
   },
   {
     q: "what is the process of voting",
-    a: "Identity check → Ink mark → Vote in EVM → VVPAT confirmation",
+    a: "Step 1: Identity check by First Polling Officer\nStep 2: Ink mark by Second Polling Officer\nStep 3: Signature in register\nStep 4: Vote in EVM by pressing button\nStep 5: VVPAT confirmation for 7 seconds",
     keywords: ["process", "steps", "voting"],
     category: "voting"
   },
@@ -158,7 +158,7 @@ const hindiKnowledgeBase = [
   },
   {
     q: "वोटर आईडी के लिए आवेदन कैसे करें?",
-    a: "फॉर्म 6 का उपयोग करके ऑनलाइन आवेदन करें या चुनावी कार्यालय जाएं → दस्तावेज जमा करें → सत्यापन → स्वीकृति",
+    a: "चरण 1: फॉर्म 6 का उपयोग करके ऑनलाइन आवेदन करें या चुनावी कार्यालय जाएं\nचरण 2: आवश्यक दस्तावेज जमा करें\nचरण 3: बूथ स्तर के अधिकारी द्वारा सत्यापन\nचरण 4: अंतिम स्वीकृति और ईपीआईसी (EPIC) निर्माण",
     keywords: ["आवेदन", "आईडी", "कार्ड", "प्रक्रिया"],
     category: "registration"
   },
@@ -194,7 +194,7 @@ const hindiKnowledgeBase = [
   },
   {
     q: "मतदान की प्रक्रिया क्या है?",
-    a: "पहचान की जांच → स्याही का निशान → ईवीएम में वोट → वीवीपीएटी पुष्टिकरण",
+    a: "चरण 1: प्रथम मतदान अधिकारी द्वारा पहचान की जांच\nचरण 2: द्वितीय मतदान अधिकारी द्वारा स्याही का निशान\nचरण 3: रजिस्टर में हस्ताक्षर\nचरण 4: बटन दबाकर ईवीएम में वोट डालें\nचरण 5: 7 सेकंड के लिए वीवीपीएटी (VVPAT) पुष्टिकरण",
     keywords: ["प्रक्रिया", "चरण", "मतदान"],
     category: "voting"
   },

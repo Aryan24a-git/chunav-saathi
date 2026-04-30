@@ -223,7 +223,9 @@ const App = {
       App.chatHistory.push({ role: "user", parts: [{ text }] });
 
       try {
-        const isNext = text.toLowerCase().includes('next step') || text.toLowerCase().includes('अगला');
+        const lowText = text.toLowerCase().trim();
+        const isNext = ["next step", "अगला चरण", "next", "अगला", "आगे", "बताएं"].includes(lowText);
+        
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

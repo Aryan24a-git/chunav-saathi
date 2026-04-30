@@ -41,10 +41,11 @@ function detectIntent(input, lang = 'en') {
     return { intent: "stop", confidence: 5, type: 'command' };
   }
 
-  // Handle 'Next' globally
-  const nextTriggers = ["next", "continue", "अगला", "आगे", "बताएं", "कंटिन्यू", "next step"];
-  if (nextTriggers.some(t => input.includes(t))) {
-    if (flowState.currentSteps.length > 0) return { intent: "next", confidence: 3, type: 'flow' };
+  // Handle 'Next' globally (More strict to avoid accidental triggers)
+  const nextTriggers = ["next", "continue", "अगला", "आगे", "बताएं", "कंटिन्यू", "next step", "अगला चरण", "आगे बढ़ें"];
+  const isNextMatch = nextTriggers.some(t => input === t || (input.length < 15 && input.includes(t)));
+  if (isNextMatch) {
+    if (flowState.currentSteps.length > 0) return { intent: "next", confidence: 5, type: 'flow' };
     if (state.currentIntent) return { intent: state.currentIntent, confidence: 2, type: 'workflow' };
   }
 
@@ -178,7 +179,9 @@ function generateResponse(match, input, lang = 'en') {
   const t = terms[lang] || terms.en;
 
   // Handle "next" keyword for step-by-step flow
-  const isNextTrigger = ["next", "अगला", "आगे", "बताएं", "continue"].some(tr => input.includes(tr));
+  // Standardize next trigger check (Strict)
+  const nextTriggers = ["next", "continue", "अगला", "आगे", "बताएं", "कंटिन्यू", "next step", "अगला चरण", "आगे बढ़ें"];
+  const isNextTrigger = nextTriggers.some(t => input === t || (input.length < 15 && input.includes(t)));
 
   // 1. Handle Stop Command (Priority)
   if (type === 'command' && intent === 'stop') {
@@ -192,7 +195,7 @@ function generateResponse(match, input, lang = 'en') {
     };
   }
 
-  if (isNextTrigger && flowState.currentSteps.length > 0) {
+  if ((type === 'flow' || (isNextTrigger && intent === 'next')) && flowState.currentSteps.length > 0) {
     flowState.stepIndex++;
     if (flowState.stepIndex < flowState.currentSteps.length) {
       return {
@@ -202,10 +205,11 @@ function generateResponse(match, input, lang = 'en') {
         progress: { current: flowState.stepIndex + 1, total: flowState.currentSteps.length }
       };
     } else {
+      const finishMsg = t.completed;
       flowState.currentSteps = [];
       flowState.stepIndex = 0;
       return {
-        text: t.completed,
+        text: finishMsg,
         type: 'flow',
         suggestions: lang === 'hi' ? ["वोटर आईडी के लिए आवेदन", "वोट कैसे डालें", "मुख्य मेनू"] : ["Apply for Voter ID", "How to Vote", "Main Menu"]
       };
@@ -225,15 +229,17 @@ function generateResponse(match, input, lang = 'en') {
   // Start new flow if answer contains "Step" or "चरण"
   const hasSteps = intent.a && (intent.a.includes("Step") || intent.a.includes("चरण") || intent.a.includes("\n"));
   if (type === 'faq' && hasSteps) {
-    flowState.currentSteps = intent.a.split("\n");
+    const rawSteps = intent.a.split("\n").filter(s => s.trim().length > 0);
+    flowState.currentSteps = rawSteps;
     flowState.stepIndex = 0;
     return {
       text: `${t.start}\n\n➡️ **${flowState.currentSteps[0]}**`,
       type: 'flow',
-      suggestions: [t.next, t.stop],
+      suggestions: flowState.currentSteps.length > 1 ? [t.next, t.stop] : [t.menu],
       progress: { current: 1, total: flowState.currentSteps.length }
     };
-  } else if (!isNextTrigger) {
+  } else if (!isNextTrigger && type !== 'command') {
+    // Only reset flow if it's a completely new topic, not a command or next trigger
     flowState.currentSteps = [];
     flowState.stepIndex = 0;
   }
