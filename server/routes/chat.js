@@ -1,16 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// RapidAPI Configuration from environment variables
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
-const RAPIDAPI_HOST = process.env.RAPIDAPI_HOST;
-const RAPIDAPI_PATH = process.env.RAPIDAPI_PATH || '/';
-const RAPIDAPI_URL = `https://${RAPIDAPI_HOST}${RAPIDAPI_PATH}`;
+// Google Gemini Configuration
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 /**
  * POST /api/chat
- * Handles conversational AI responses via RapidAPI
+ * Handles conversational AI responses via Google Gemini SDK
  */
 const { englishKnowledgeBase, hindiKnowledgeBase, INTENT_DATA } = require('../data/knowledgeBase');
 
@@ -152,11 +151,11 @@ router.post('/chat', async (req, res) => {
       return res.json({ reply: fallbackMsg });
     }
 
-    if (!RAPIDAPI_KEY) {
-      return res.status(500).json({ error: 'RapidAPI Key not configured on server. Please add RAPIDAPI_KEY to .env' });
+    if (!GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'Gemini API Key not configured on server. Please add GEMINI_API_KEY to .env' });
     }
 
-    // 3. Last Resort: Call AI API
+    // 3. Last Resort: Call Google Gemini SDK
     const systemPrompt = `You are "Chunav Saathi", a dedicated Indian Election Education Assistant. 
     Your STRICT mission is to educate users about the Indian electoral process.
     IMPORTANT: You must respond in ${isHi ? "HINDI" : "ENGLISH"} because the user has selected that language.
@@ -171,41 +170,19 @@ router.post('/chat', async (req, res) => {
     
     const prompt = `${systemPrompt}\n\nUser: ${message}`;
 
-    const options = {
-      method: 'POST',
-      url: `https://${process.env.RAPIDAPI_HOST}${process.env.RAPIDAPI_PATH}`,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-rapidapi-host': process.env.RAPIDAPI_HOST,
-        'x-rapidapi-key': RAPIDAPI_KEY
-      },
-      data: {
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        web_access: false
-      }
-    };
-
-    console.log("Sending request to RapidAPI (chatgpt-42)...");
-    const response = await axios.request(options);
-    console.log("RapidAPI Response received:", JSON.stringify(response.data).substring(0, 500));
-
-    // Handle different possible response structures
-    const reply = response.data.result || 
-                  (response.data.choices && response.data.choices[0]?.message?.content) || 
-                  response.data.response ||
-                  "I apologize, but I am unable to process your request at the moment.";
+    console.log("Sending request to Google Gemini...");
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const reply = response.text();
+    
+    console.log("Gemini Response received:", reply.substring(0, 500));
 
     res.json({ reply: reply });
   } catch (error) {
-    console.error("RapidAPI Chat Error:", error.response ? error.response.data : error.message);
+    console.error("Gemini Chat Error:", error.message);
     res.status(500).json({ 
       error: "Failed to get AI response", 
-      details: error.response ? error.response.data : error.message 
+      details: error.message 
     });
   }
 });
