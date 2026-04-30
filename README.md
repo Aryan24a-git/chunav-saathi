@@ -1,43 +1,67 @@
-# 🗳️ Chunav Saathi — Indian Election Assistant
+# 🗳️ Chunav Saathi (चुनाव साथी)
+### *Your Personal Guide to Indian Democracy*
 
-## Vertical
-Civic Education & Voter Awareness
+Chunav Saathi is a premium, bilingual AI assistant designed to bridge the information gap in the Indian electoral process. It provides citizens with instant, accurate, and interactive guidance on everything from Voter ID registration to understanding Electronic Voting Machines (EVMs).
 
-## Architecture
-The application follows a **Single-Server Architecture** using Node.js/Express. It serves a Single Page Application (SPA) as static assets and provides a set of REST APIs for AI interactions, quiz generation, and text-to-speech services. The frontend is built with vanilla JavaScript, HTML5, and CSS3, ensuring zero build overhead and maximum compatibility.
+---
 
-## Google Services Used
-| Service | Purpose |
-|---|---|
-| AI chat assistant + dynamic quiz generation |
-| Accessibility — read content aloud |
-| GCP Cloud Run | Serverless deployment, auto-scaling |
-| GCP Cloud Build | CI/CD pipeline from GitHub |
-| Artifact Registry | Docker image storage |
+## 🏛️ Chosen Vertical: Civic Tech & Electoral Education
+In a democracy of 1.4 billion people, navigating the rules and processes of the **Election Commission of India (ECI)** can be overwhelming. **Chunav Saathi** focuses on:
+- **Voter Empowerment**: Simplifying complex registration forms (Form 6, 7, 8).
+- **Procedural Transparency**: Step-by-step guidance on how to vote.
+- **Combating Misinformation**: Factual, unbiased answers about EVM security and the Model Code of Conduct (MCC).
 
-## Features
-- 🤖 **AI Chat Assistant**: Gemini-powered conversational agent specialized in Indian election laws, voter rights, and ECI processes.
-- 🧠 **Dynamic Quiz**: AI-generated questions tailored to specific topics (e.g., EVMs, MCC) to test user knowledge.
-- 🃏 **Flashcards**: 30+ interactive cards with spaced repetition logic for quick learning of election terminology.
-- 📅 **Interactive Election Timeline**: 8 key stages of the election process with detailed facts and assistant integration.
-- 🌐 **Bilingual Support**: Seamless toggle between Hindi and English for all UI elements and AI responses.
-  
-## How It Works
-1. **Request Flow**: User interacts with the UI -> Frontend sends a fetch request to `/api` -> Node.js backend processes request (using Gemini or local mock data) -> Response is returned and rendered.
-2. **AI Logic**: Chat queries are sent to Gemini 1.5 Flash with a strict system prompt to ensure domain-specific, neutral, and factual accuracy.
-3. **Deployment**: Pushing to the `main` branch triggers GitHub Actions, which submits a build to Cloud Build. The resulting Docker image is deployed to Cloud Run.
+---
 
-## Local Development
-```bash
-git clone [repo-url]
-cd chunav-saathi
-npm install
-cp .env.example .env  # Add your GEMINI_API_KEY
-npm start
-# Open http://localhost:8080 (or 3000 depending on environment)
-```
+## 🧠 Approach and Logic: "Local-First, AI-Powered"
+To ensure sustainability and cost-efficiency (saving API credits), the application utilizes a **Hybrid Routing Architecture**:
 
-## Assumptions
-- Content is based on the 2024 Lok Sabha election rules defined by the Election Commission of India (ECI).
-- Hindi and English are the primary supported languages in Phase 1.
-- Gemini 1.5 Flash is selected as the primary LLM for its optimal balance of speed, cost, and factual recall.
+1.  **Guided Session Engine (Priority 1)**: 
+    - Common workflows (like "Registering for a Voter ID") are hardcoded as multi-step guided sessions. 
+    - This allows for **instant, zero-latency, and zero-cost** navigation using interactive UI buttons.
+2.  **Local Knowledge Base (Priority 2)**: 
+    - The server maintains an extensive local knowledge base in both English and Hindi.
+    - User queries are first matched against this local data using a keyword-scoring algorithm before calling any external APIs.
+3.  **AI Fallback (Priority 3)**: 
+    - If a query is complex or not in the local data, it falls back to a specialized AI model (RapidAPI/Gemini).
+    - A strict system prompt ensures the AI remains on-topic and responds in the user's selected language.
+
+---
+
+## 🛠️ How the Solution Works
+
+### **1. The Guided Navigation System**
+When a user asks for a process (e.g., "Step by step voting"), the server initiates an **Active Guided Session**. 
+- **Interactive UI**: Instead of typing "Next", users get **Orange (Next)**, **Blue (Prev)**, and **Red (Stop)** buttons inside the chat.
+- **Progress Tracking**: A dynamic progress bar (e.g., "Step 2 of 5") keeps the user oriented.
+
+### **2. Bilingual Synchronization**
+The app is built with **Bilingualism at its Core**:
+- **Frontend**: A comprehensive translation mapping handles all UI elements, suggested chips, and navigation labels.
+- **Backend**: Parallel knowledge bases in English and Hindi ensure that "Local Hits" are linguistically accurate.
+
+### **3. Educational Modules**
+- **Quiz Engine**: Tests your knowledge with randomized questions from a mock dataset.
+- **Flashcards**: Uses a custom UI for quick memorization of election terms.
+- **Timeline**: A visual journey through the 8 stages of an Indian election.
+
+---
+
+## 📋 Assumptions Made
+- **Local-First Priority**: We assume that 90% of user queries revolve around common topics (Voter ID, EVM, Dates). By handling these locally, we reduce API dependency by ~90%.
+- **ECI 2024 Guidelines**: All logic and data follow the latest protocols established by the Election Commission of India for the 2024 General Elections.
+- **Mobile-First Accessibility**: The UI is designed to be claymorphic and touch-friendly, assuming most users will access it via mobile devices.
+- **No-Login Experience**: To maximize reach and privacy, the app assumes no user authentication is required; sessions are managed anonymously via IP/Session logic.
+
+---
+
+## 🚀 Getting Started
+1.  **Clone**: `git clone [repo-url]`
+2.  **Install**: `npm install`
+3.  **Configure**: Create a `.env` file with your `RAPIDAPI_KEY`.
+4.  **Run**: `npm start`
+5.  **Access**: `http://localhost:8080`
+
+---
+
+*Made with ❤️ for the Indian Voter.*

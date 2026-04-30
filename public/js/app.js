@@ -26,9 +26,7 @@ const TRANSLATIONS = {
     navAssistant: "Assistant", navQuiz: "Quiz", navFlashcard: "Flashcards", navTimeline: "Timeline",
     chatPlaceholder: "Ask about Indian elections...",
     btnSend: "Send", btnLang: "हिं/EN",
-    suggest1: "Apply for new Voter ID", 
-    suggest2: "Process of voting step by step", 
-    suggest3: "Report code of conduct violation",
+    welcome: "🗳️ **Namaste! I am Chunav Saathi**, your Election Assistant. What would you like to know today?",
     quizLoading: "Quiz loading...", scorePerfect: "🏆 Perfect! You're an election expert!",
     scoreGood: "✅ Good knowledge! Keep learning!", scoreLow: "📚 Let's study more — try Flashcards!",
     btnRetry: "Try Again", btnStudy: "Study Flashcards",
@@ -36,15 +34,10 @@ const TRANSLATIONS = {
     timelineAsk: "Ask Assistant about this →"
   },
   hi: {
-    timelineAsk: "Ask Assistant about this →"
-  },
-  hi: {
     navAssistant: "सहायक", navQuiz: "प्रश्नोत्तरी", navFlashcard: "फ्लैशकार्ड", navTimeline: "समयरेखा",
     chatPlaceholder: "भारतीय चुनावों के बारे में पूछें...",
     btnSend: "भेजें", btnLang: "EN/हिं",
-    suggest1: "नया वोटर आईडी कैसे बनाएं?", 
-    suggest2: "वोट डालने की प्रक्रिया", 
-    suggest3: "शिकायत कैसे दर्ज करें?",
+    welcome: "🗳️ **नमस्ते! मैं चुनाव साथी हूँ**, आपका चुनाव सहायक। आज आप क्या जानना चाहेंगे?",
     quizLoading: "प्रश्नोत्तरी लोड हो रही है...", scorePerfect: "🏆 शानदार! आप चुनाव विशेषज्ञ हैं!",
     scoreGood: "✅ अच्छा ज्ञान! सीखते रहें!", scoreLow: "📚 चलिए और अध्ययन करते हैं — फ्लैशकार्ड आज़माएं!",
     btnRetry: "पुनः प्रयास करें", btnStudy: "फ्लैशकार्ड पढ़ें",
@@ -106,7 +99,7 @@ const App = {
 
     // Refresh Suggestions
     if (this.currentPage === 'assistant') {
-        this.Chat.renderSuggestions([t.suggest1, t.suggest2, t.suggest3]);
+        this.Chat.renderSuggestions(this.Chat.getSuggestions(""));
         this.Chat.populateCommonQuestions();
     }
     
@@ -140,18 +133,12 @@ const App = {
 
       // Welcome message logic
       if (App.chatHistory.length === 0) {
-        const welcomeMsg = App.language === 'hi' 
-          ? "🗳️ **नमस्ते! मैं चुनाव साथी हूँ**, आपका चुनाव सहायक। आज आप क्या जानना चाहेंगे?"
-          : "🗳️ **Namaste! I am Chunav Saathi**, your Election Assistant. What would you like to know today?";
+        const welcomeMsg = TRANSLATIONS[App.language].welcome;
         
         // Use a flag to prevent double message
         if (!this.welcomeSent) {
           this.addBubble('bot', welcomeMsg);
-          this.renderSuggestions([
-            App.language === 'hi' ? "वोटर आईडी के लिए आवेदन" : "How to apply for Voter ID",
-            App.language === 'hi' ? "मतदान की प्रक्रिया" : "Process of voting",
-            App.language === 'hi' ? "नोटा (NOTA) क्या है?" : "What is NOTA?"
-          ]);
+          this.renderSuggestions(this.getSuggestions(""));
           this.welcomeSent = true;
         }
       }
@@ -224,13 +211,16 @@ const App = {
 
       try {
         const lowText = text.toLowerCase().trim();
-        const isNext = ["next step", "अगला चरण", "next", "अगला", "आगे", "बताएं"].includes(lowText);
+        let cmd = text;
+        if (["next step", "अगला चरण", "next", "अगला", "आगे", "बताएं"].some(k => lowText.includes(k))) cmd = "next";
+        if (["previous step", "पिछला चरण", "previous", "पिछला", "पीछे"].some(k => lowText.includes(k))) cmd = "previous";
+        if (["stop guidance", "रुकें", "बंद करें", "stop", "exit"].some(k => lowText.includes(k))) cmd = "stop";
         
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ 
-            message: isNext ? "next" : text, 
+            message: cmd, 
             history: App.chatHistory, 
             lang: App.language 
           })
@@ -244,20 +234,30 @@ const App = {
         const data = await res.json();
         
         if (loading) loading.remove();
-        this.addBubble('bot', data.reply, data.progress);
-        App.chatHistory.push({ role: "model", parts: [{ text: data.reply }] });
         
         const suggestions = data.suggestions && data.suggestions.length > 0 
           ? data.suggestions 
           : this.getSuggestions(data.reply);
-          
-        this.renderSuggestions(suggestions);
+
+        const hasCustomButtons = !!(data.suggestions && data.suggestions.length > 0);
+        this.addBubble('bot', data.reply, data.progress, suggestions);
+        App.chatHistory.push({ role: "model", parts: [{ text: data.reply }] });
+        
+        // If we showed buttons in the bubble, clear the bottom chips to focus on the guide
+        if (hasCustomButtons) {
+          this.renderSuggestions([]);
+        } else {
+          this.renderSuggestions(this.getSuggestions(data.reply));
+        }
       } catch (e) {
         if (loading) loading.remove();
-        const errorMsg = e.message.includes('Too many requests') 
-          ? (App.language === 'hi' ? "बहुत अधिक अनुरोध। कृपया एक मिनट प्रतीक्षा करें।" : "Too many requests. Please wait a minute.")
-          : (App.language === 'hi' ? "कनेक्शन त्रुटि। कृपया अपना इंटरनेट जांचें।" : "Connection error. Please check your internet.");
-        this.addBubble('bot', errorMsg);
+        let errorMsg = e.message;
+        if (errorMsg.includes('Too many requests')) {
+          errorMsg = App.language === 'hi' ? "बहुत अधिक अनुरोध। कृपया प्रतीक्षा करें।" : "Too many requests. Please wait.";
+        } else if (errorMsg.includes('quota')) {
+          errorMsg = App.language === 'hi' ? "API कोटा समाप्त हो गया है।" : "API Quota Exceeded. Please check your subscription.";
+        }
+        this.addBubble('bot', `⚠️ ${errorMsg}`);
       }
       
       const container = document.getElementById('chat-messages');
@@ -265,13 +265,48 @@ const App = {
     },
 
     getSuggestions(reply) {
-      const s = [];
+      const isHi = App.language === 'hi';
+      const pool = {
+        general: isHi ? [
+          "मतदान के लिए कौन पात्र है?", "अपना पोलिंग बूथ कैसे खोजें?", "ईवीएम क्या है?", 
+          "वोटर आईडी के लिए आवेदन कैसे करें?", "चुनाव की तारीखें क्या हैं?", "आचार संहिता क्या है?",
+          "अपना नाम वोटर लिस्ट में कैसे देखें?", "शिकायत कहाँ दर्ज करें?", "एनआरआई कैसे वोट दे सकते हैं?"
+        ] : [
+          "Who is eligible to vote?", "How to find my polling booth?", "What is EVM?", 
+          "How to apply for voter ID?", "What are election dates?", "What is MCC?",
+          "How to check name in voter list?", "Where to report violations?", "How can NRIs vote?"
+        ],
+        registration: isHi ? [
+          "फॉर्म 6 के लिए कौन से दस्तावेज चाहिए?", "पंजीकरण में कितना समय लगता है?", 
+          "क्या मैं 17 साल की उम्र में आवेदन कर सकता हूँ?", "मेरा वोटर आईडी कब आएगा?"
+        ] : [
+          "What documents do I need for Form 6?", "How long does registration take?", 
+          "Can I apply at 17?", "When will I get my Voter ID?"
+        ],
+        evm: isHi ? [
+          "वीवीपीएटी (VVPAT) क्या है?", "क्या ईवीएम से छेड़छाड़ हो सकती है?", 
+          "नोटा (NOTA) क्या है?", "वोट की गोपनीयता कैसे बनी रहती है?"
+        ] : [
+          "What is VVPAT?", "Is EVM tamper-proof?", "What is NOTA?", "How is vote secrecy maintained?"
+        ],
+        mcc: isHi ? [
+          "आचार संहिता (MCC) कब शुरू होती है?", "आचार संहिता के उल्लंघन पर क्या होता है?", 
+          "उम्मीदवारों के लिए क्या नियम हैं?", "क्या घोषणाएं की जा सकती हैं?"
+        ] : [
+          "When does MCC start?", "What happens if MCC is violated?", 
+          "What are rules for candidates?", "Can announcements be made?"
+        ]
+      };
+
+      let source = pool.general;
       const lower = reply.toLowerCase();
-      if (lower.includes('form 6')) s.push("What documents do I need for Form 6?", "How long does registration take?");
-      else if (lower.includes('evm') || lower.includes('vvpat')) s.push("What is VVPAT?", "Is EVM tamper-proof?");
-      else if (lower.includes('model code') || lower.includes('mcc')) s.push("When does MCC start?", "What happens if MCC is violated?");
-      else s.push("Who is eligible to vote?", "How to find my polling booth?");
-      return s;
+      if (lower.includes('form 6') || lower.includes('registration') || lower.includes('पंजीकरण')) source = [...pool.registration, ...pool.general];
+      else if (lower.includes('evm') || lower.includes('vvpat') || lower.includes('ईवीएम')) source = [...pool.evm, ...pool.general];
+      else if (lower.includes('model code') || lower.includes('mcc') || lower.includes('आचार संहिता')) source = [...pool.mcc, ...pool.general];
+
+      // Randomize and pick 3-4 unique suggestions
+      const shuffled = [...new Set(source)].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, 4);
     },
 
     renderSuggestions(chips) {
@@ -286,7 +321,7 @@ const App = {
       });
     },
 
-    addBubble(role, text, progress = null) {
+    addBubble(role, text, progress = null, buttons = []) {
       const div = document.createElement('div');
       div.className = role === 'user' ? 'bubble-user' : 'bubble-bot';
       
@@ -307,6 +342,29 @@ const App = {
         div.appendChild(progDiv);
       }
 
+      if (buttons && buttons.length > 0) {
+        const btnContainer = document.createElement('div');
+        btnContainer.className = 'bubble-buttons';
+        buttons.forEach(btnText => {
+          const btn = document.createElement('button');
+          btn.className = 'bubble-action-btn';
+          
+          // Assign specific classes for special navigation buttons
+          const lowBtn = btnText.toLowerCase();
+          if (lowBtn.includes('next') || lowBtn.includes('अगला')) btn.classList.add('btn-next');
+          if (lowBtn.includes('prev') || lowBtn.includes('पिछला')) btn.classList.add('btn-prev');
+          if (lowBtn.includes('stop') || lowBtn.includes('रुकें') || lowBtn.includes('रोकें')) btn.classList.add('btn-stop');
+
+          btn.textContent = btnText;
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            this.sendMessage(btnText);
+          };
+          btnContainer.appendChild(btn);
+        });
+        div.appendChild(btnContainer);
+      }
+
       document.getElementById('chat-messages').appendChild(div);
       return div;
     },
@@ -314,9 +372,24 @@ const App = {
     addLoadingBubble() {
       const div = document.createElement('div');
       div.id = 'loading-bubble';
-      div.className = 'bubble-loading';
-      div.innerHTML = '<span></span><span></span><span></span>';
+      div.className = 'bubble-loading-container';
+      
+      const dots = document.createElement('div');
+      dots.className = 'bubble-loading';
+      dots.innerHTML = '<span></span><span></span><span></span>';
+      
+      const text = document.createElement('div');
+      text.className = 'loading-text';
+      text.textContent = App.language === 'hi' ? 'संसाधित किया जा रहा है...' : 'Processing your request...';
+      
+      div.appendChild(dots);
+      div.appendChild(text);
+      
       document.getElementById('chat-messages').appendChild(div);
+      
+      const container = document.getElementById('chat-messages');
+      container.scrollTop = container.scrollHeight;
+      
       return div;
     },
 
@@ -347,7 +420,7 @@ const App = {
         const res = await fetch('/api/quiz/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic })
+          body: JSON.stringify({ topic, lang: App.language })
         });
         const data = await res.json();
         this.state.questions = data.quiz;
@@ -534,8 +607,8 @@ const App = {
       App.showPage('assistant');
       const input = document.getElementById('chat-input');
       const query = this.language === 'hi' 
-        ? `भारतीय चुनावों में ${stageName} चरण के बारे में और बताएं।`
-        : `Tell me more about the ${stageName} stage in Indian elections.`;
+        ? `${stageName}`
+        : `${stageName}`;
       
       input.value = query;
       // Also add the Hindi variations to knowledgeBase if not present

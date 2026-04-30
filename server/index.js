@@ -1,4 +1,6 @@
-require('dotenv').config();
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -20,8 +22,8 @@ app.use('/api', rateLimiter);
 
 // Mount routes
 app.use('/api', chatRoutes);
-app.use('/api', quizRoutes);
-app.use('/api', ttsRoutes);
+app.use('/api/quiz', quizRoutes);
+app.use('/api/tts', ttsRoutes);
 
 // Catch-all route to serve index.html
 app.get('*', (req, res) => {
