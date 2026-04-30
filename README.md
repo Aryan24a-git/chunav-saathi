@@ -9,8 +9,8 @@ The application follows a **Single-Server Architecture** using Node.js/Express. 
 ## Google Services Used
 | Service | Purpose |
 |---|---|
-| Gemini 1.5 Flash API | AI chat assistant + dynamic quiz generation |
-| Google Text-to-Speech | Accessibility — read content aloud |
+| AI chat assistant + dynamic quiz generation |
+| Accessibility — read content aloud |
 | GCP Cloud Run | Serverless deployment, auto-scaling |
 | GCP Cloud Build | CI/CD pipeline from GitHub |
 | Artifact Registry | Docker image storage |
@@ -21,8 +21,7 @@ The application follows a **Single-Server Architecture** using Node.js/Express. 
 - 🃏 **Flashcards**: 30+ interactive cards with spaced repetition logic for quick learning of election terminology.
 - 📅 **Interactive Election Timeline**: 8 key stages of the election process with detailed facts and assistant integration.
 - 🌐 **Bilingual Support**: Seamless toggle between Hindi and English for all UI elements and AI responses.
-- 🔊 **Text-to-Speech**: Integrated audio playback for assistant replies to improve accessibility.
-
+  
 ## How It Works
 1. **Request Flow**: User interacts with the UI -> Frontend sends a fetch request to `/api` -> Node.js backend processes request (using Gemini or local mock data) -> Response is returned and rendered.
 2. **AI Logic**: Chat queries are sent to Gemini 1.5 Flash with a strict system prompt to ensure domain-specific, neutral, and factual accuracy.
