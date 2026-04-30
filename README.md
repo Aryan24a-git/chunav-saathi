@@ -23,7 +23,7 @@ To ensure sustainability and cost-efficiency (saving API credits), the applicati
     - The server maintains an extensive local knowledge base in both English and Hindi.
     - User queries are first matched against this local data using a keyword-scoring algorithm before calling any external APIs.
 3.  **AI Fallback (Priority 3)**: 
-    - If a query is complex or not in the local data, it falls back to a specialized AI model (RapidAPI/Gemini).
+    - If a query is complex or not in the local data, it falls back to a specialized **LLM API**.
     - A strict system prompt ensures the AI remains on-topic and responds in the user's selected language.
 
 ---
@@ -58,7 +58,7 @@ The app is built with **Bilingualism at its Core**:
 ## 🚀 Getting Started
 1.  **Clone**: `git clone [repo-url]`
 2.  **Install**: `npm install`
-3.  **Configure**: Create a `.env` file with your `RAPIDAPI_KEY`.
+3.  **Configure**: Create a `.env` file with your `API_KEY`.
 4.  **Run**: `npm start`
 5.  **Access**: `http://localhost:8080`
 
