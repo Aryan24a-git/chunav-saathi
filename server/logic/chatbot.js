@@ -195,7 +195,11 @@ function generateResponse(match, input, lang = 'en') {
     };
   }
 
-  if ((type === 'flow' || (isNextTrigger && intent === 'next')) && flowState.currentSteps.length > 0) {
+  // 3. Handle Flow/Workflow Step (Next)
+  const isFlowNext = (type === 'flow' || (isNextTrigger && intent === 'next'));
+  
+  // Dynamic FAQ Flow
+  if (isFlowNext && flowState.currentSteps.length > 0) {
     flowState.stepIndex++;
     if (flowState.stepIndex < flowState.currentSteps.length) {
       return {
@@ -213,6 +217,38 @@ function generateResponse(match, input, lang = 'en') {
         type: 'flow',
         suggestions: lang === 'hi' ? ["वोटर आईडी के लिए आवेदन", "वोट कैसे डालें", "मुख्य मेनू"] : ["Apply for Voter ID", "How to Vote", "Main Menu"]
       };
+    }
+  }
+
+  // Hardcoded Workflow Flow
+  if (type === 'workflow' || (isNextTrigger && state.currentIntent && intent === state.currentIntent)) {
+    const activeIntent = type === 'workflow' ? intent : state.currentIntent;
+    const workflow = intentsData[activeIntent];
+    
+    if (workflow) {
+      if (isNextTrigger) {
+        state.currentStep++;
+      } else {
+        state.currentStep = 0;
+        state.currentIntent = activeIntent;
+      }
+
+      if (state.currentStep < workflow.steps.length) {
+        return {
+          text: `📋 **Guide**: ${activeIntent.replace(/_/g, ' ')}\n\n**Step ${state.currentStep + 1}**: ${workflow.steps[state.currentStep]}`,
+          suggestions: [t.next, t.stop],
+          type: "step",
+          progress: { current: state.currentStep + 1, total: workflow.steps.length }
+        };
+      } else {
+        state.currentIntent = null;
+        state.currentStep = 0;
+        return {
+          text: t.completed,
+          suggestions: [t.menu],
+          type: "step"
+        };
+      }
     }
   }
 
@@ -260,18 +296,8 @@ function generateResponse(match, input, lang = 'en') {
     };
   }
 
-  // Workflow Logic (Default to English as per intents.json structure)
-  const workflow = intentsData[intent];
-  if (!workflow) return { text: "Error processing request.", type: "fallback" };
-
-  state.currentIntent = intent;
-  state.currentStep = 0;
-
-  return {
-    text: `📋 **Guide**: ${intent.replace(/_/g, ' ')}\n\n**Step 1**: ${workflow.steps[0]}`,
-    suggestions: [t.next],
-    type: "step"
-  };
+  // Note: Workflow logic is now handled above in the consolidated Flow/Workflow block
+  return { text: "Error processing request.", type: "fallback" };
 }
 
 
