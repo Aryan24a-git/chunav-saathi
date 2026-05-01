@@ -13,6 +13,9 @@ const ttsRoutes = require('./routes/tts');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Trust Cloud Run proxy for rate-limiting
+app.set('trust proxy', 1);
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));

@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Safely get API Key (removing any accidental double quotes)
+const API_KEY = (process.env.GEMINI_API_KEY || '').replace(/"/g, '');
+const genAI = new GoogleGenerativeAI(API_KEY);
 const quizModel = genAI.getGenerativeModel({ 
   model: 'gemini-flash-latest' 
 });

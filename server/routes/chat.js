@@ -4,7 +4,9 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { englishKnowledgeBase, hindiKnowledgeBase } = require('../data/knowledgeBase');
 
 // Google AI Studio Configuration
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Safely get API Key (removing any accidental double quotes)
+const API_KEY = (process.env.GEMINI_API_KEY || '').replace(/"/g, '');
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 const model = genAI.getGenerativeModel({
   model: 'gemini-flash-latest'
