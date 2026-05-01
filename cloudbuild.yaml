@@ -23,13 +23,8 @@ steps:
       - '--cpu=1'
       - '--max-instances=3'
       - '--service-account=chunav-sa@chunav-saathi-494717.iam.gserviceaccount.com'
-      - '--set-env-vars=NODE_ENV=production,GEMINI_API_KEY=$$GEMINI_API_KEY'
-    secretEnv: ['GEMINI_API_KEY']
-
-availableSecrets:
-  secretManager:
-    - versionName: projects/692586675932/secrets/GEMINI_API_KEY/versions/latest
-      env: 'GEMINI_API_KEY'
+      - '--set-env-vars=NODE_ENV=production'
+      - '--set-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest'
 
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:latest'
