@@ -4,8 +4,8 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { englishKnowledgeBase, hindiKnowledgeBase } = require('../data/knowledgeBase');
 
 // Google AI Studio Configuration
-// Safely get API Key (removing any accidental double quotes)
-const API_KEY = (process.env.GEMINI_API_KEY || '').replace(/"/g, '');
+// Safely get API Key (removing any accidental double quotes and hidden chars)
+const API_KEY = (process.env.GEMINI_API_KEY || '').replace(/"/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 const model = genAI.getGenerativeModel({
@@ -115,11 +115,18 @@ router.post('/chat', async (req, res) => {
     }
 
     // 3. Last Resort: Google Gemini AI
+    if (!API_KEY || API_KEY === '') {
+      return res.json({ 
+        reply: isHi ? "⚠️ AI सेवा अभी उपलब्ध नहीं है।" : "⚠️ AI service is unavailable.",
+        source: 'error'
+      });
+    }
+
     const chat = model.startChat({
       history: history || [],
     });
 
-    // Prepend system prompt if it's a new chat or every time for consistency in stable v1
+    // Prepend system prompt if it's a new chat or every time for consistency
     const finalPrompt = `${SYSTEM_PROMPT}\n\nUser Question: ${message}`;
     const result = await chat.sendMessage(finalPrompt);
     const response = await result.response;
@@ -131,8 +138,23 @@ router.post('/chat', async (req, res) => {
     });
 
   } catch (error) {
-    console.error("AI API ERROR DETAILS:", error);
-    res.status(500).json({ error: "Failed to get AI response", details: error.message });
+    console.error("AI API ERROR DETAILS:", error.message);
+    const isHi = req.body.lang === 'hi';
+
+    // Handle quota/rate-limit errors gracefully
+    if (error.message && (error.message.includes('429') || error.message.includes('quota') || error.message.includes('RESOURCE_EXHAUSTED'))) {
+      return res.status(429).json({
+        reply: isHi 
+          ? "⚠️ API कोटा समाप्त हो गया है। कृपया बाद में पुनः प्रयास करें।" 
+          : "⚠️ API quota exceeded. Please try again later.",
+        error: error.message
+      });
+    }
+
+    res.status(500).json({ 
+      reply: isHi ? "⚠️ समस्या हुई। कृपया पुनः प्रयास करें।" : "⚠️ Something went wrong. Please try again.",
+      error: error.message 
+    });
   }
 });
 
