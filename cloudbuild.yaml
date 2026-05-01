@@ -3,19 +3,19 @@ steps:
     args: 
       - 'build'
       - '-t'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:latest'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:${_GIT_SHA:-latest}'
       - '.'
   - name: 'gcr.io/cloud-builders/docker'  
     args: 
       - 'push'
-      - 'us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:latest'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:${_GIT_SHA:-latest}'
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
       - 'chunav-saathi'
-      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:latest'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:${_GIT_SHA:-latest}'
       - '--region=us-central1'
       - '--platform=managed'
       - '--allow-unauthenticated'
@@ -26,5 +26,8 @@ steps:
       - '--set-env-vars=NODE_ENV=production'
       - '--set-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest'
 
+substitutions:
+  _GIT_SHA: 'latest'
+
 images:
-  - 'us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:latest'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/chunav-saathi/app:${_GIT_SHA:-latest}'
