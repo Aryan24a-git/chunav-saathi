@@ -22,14 +22,7 @@ const API_KEY = (process.env.GEMINI_API_KEY || '').replace(/"/g, '').replace(/[\
 // We define a fallback test to check if the api key exists
 const model = API_KEY ? chatModel : null;
 
-const SYSTEM_PROMPT = `You are Chunav Saathi, an expert ONLY 
-on Indian elections. Answer questions about ECI, voter 
-registration, EVM, MCC, Lok Sabha, Rajya Sabha, election 
-timeline, and voter rights. Keep answers under 120 words. 
-Be friendly and simple. If asked anything unrelated to 
-Indian elections say: I only help with Indian election 
-questions! Always respond in the same language the user 
-writes in.`;
+const { SYSTEM_PROMPT } = require('../prompts/systemPrompt');
 
 // In-memory session store for guided steps (Credit-saving layer)
 const activeGuidedSessions = {};

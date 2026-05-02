@@ -9,6 +9,8 @@ const rateLimiter = require('./middleware/rateLimiter');
 const chatRoutes = require('./routes/chat');
 const quizRoutes = require('./routes/quiz');
 const ttsRoutes = require('./routes/tts');
+const logger = require('./utils/logger');
+const AppError = require('./utils/AppError');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -24,12 +26,20 @@ const ALLOWED_ORIGINS = [
 ];
 
 app.use(cors({
+  /**
+   * Validates the origin of incoming requests.
+   * 
+   * @param {string} origin - The origin of the request
+   * @param {Function} callback - Callback function
+   * @returns {void}
+   * @throws {AppError} If origin is not allowed
+   */
   origin: (origin, callback) => {
     // Allow requests with no origin (e.g. curl, mobile apps, same-origin)
     if (!origin || ALLOWED_ORIGINS.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+      callback(new AppError(`CORS policy: origin ${origin} not allowed`, 403, 'CORS_ERROR'));
     }
   },
   methods: ['GET', 'POST'],
@@ -46,7 +56,14 @@ app.use('/api', chatRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/tts', ttsRoutes);
 
-// Health check endpoint — required for load balancers and deployment verification
+/**
+ * @route GET /health
+ * @desc Health check endpoint — required for load balancers and deployment verification
+ * @access Public
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {void} Returns a JSON object with status ok
+ */
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -55,21 +72,46 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Catch-all route to serve index.html
+/**
+ * @route GET /*
+ * @desc Catch-all route to serve the frontend index.html
+ * @access Public
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {void} Sends the index.html file
+ */
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Global error handler
+/**
+ * Global error handling middleware
+ * Catches all unhandled errors from route handlers
+ */
 app.use((err, req, res, next) => {
-  console.error("GLOBAL ERROR:", err.message);
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something broke!', details: err.message });
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+  
+  logger.error(`[${new Date().toISOString()}] Error:`, {
+    statusCode,
+    message,
+    path: req.path,
+    method: req.method
+  });
+  
+  res.status(statusCode).json({
+    error: true,
+    message: process.env.NODE_ENV === 'production' 
+      ? 'Something went wrong' 
+      : message,
+    code: err.code || 'INTERNAL_ERROR',
+    timestamp: new Date().toISOString()
+  });
 });
 
 if (require.main === module) {
   app.listen(PORT, () => {
-    console.log(`Chunav Saathi running on port ${PORT}`);
+    logger.info(`Chunav Saathi running on port ${PORT}`);
   });
 }
 

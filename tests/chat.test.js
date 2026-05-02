@@ -45,4 +45,98 @@ describe('Chat API', () => {
     
     expect(response.status).toBe(400);
   });
+
+  describe('Active Guided Sessions', () => {
+    it('should start a guided session when matching a step-by-step topic', async () => {
+      const response = await request(app)
+        .post('/api/chat')
+        .send({ message: 'How to apply for a new voter ID online?', lang: 'en' });
+      
+      expect(response.status).toBe(200);
+      expect(response.body.reply).toContain('[GUIDED MODE]');
+      expect(response.body.progress).toBeDefined();
+      expect(response.body.progress.current).toBe(1);
+    });
+
+    it('should navigate to the next step', async () => {
+      // First message to initialize
+      await request(app)
+        .post('/api/chat')
+        .send({ message: 'How to apply for a new voter ID online?', lang: 'en' });
+        
+      const response = await request(app)
+        .post('/api/chat')
+        .send({ message: 'next step', lang: 'en' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.progress.current).toBe(2);
+    });
+
+    it('should navigate to the previous step', async () => {
+      // First message to initialize and move to step 2
+      await request(app).post('/api/chat').send({ message: 'How to apply for a new voter ID online?', lang: 'en' });
+      await request(app).post('/api/chat').send({ message: 'next step', lang: 'en' });
+
+      const response = await request(app)
+        .post('/api/chat')
+        .send({ message: 'previous step', lang: 'en' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.progress.current).toBe(1);
+    });
+
+    it('should stop guidance', async () => {
+      // First message to initialize
+      await request(app).post('/api/chat').send({ message: 'How to apply for a new voter ID online?', lang: 'en' });
+      
+      const response = await request(app)
+        .post('/api/chat')
+        .send({ message: 'stop guidance', lang: 'en' });
+
+      expect(response.status).toBe(200);
+      expect(response.body.reply).toContain('stopped the guidance');
+    });
+
+    it('should handle guidance complete', async () => {
+      await request(app).post('/api/chat').send({ message: 'How to apply for a new voter ID online?', lang: 'en' });
+      // Total 7 steps. Loop next step 6 times.
+      for (let i = 0; i < 6; i++) {
+        await request(app).post('/api/chat').send({ message: 'next step', lang: 'en' });
+      }
+      const response = await request(app).post('/api/chat').send({ message: 'next step', lang: 'en' });
+      expect(response.status).toBe(200);
+      expect(response.body.reply).toContain('Guidance complete');
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should return 429 for API quota error', async () => {
+      // Create a local mock for testing error paths since we mocked globally
+      const { chatModel } = require('../server/services/gemini');
+      jest.spyOn(chatModel, 'startChat').mockImplementationOnce(() => ({
+        sendMessage: jest.fn().mockRejectedValue(new Error('429 Quota exceeded'))
+      }));
+
+      const response = await request(app)
+        .post('/api/chat')
+        .send({ message: 'Random question not in KB', lang: 'en' });
+        
+      expect(response.status).toBe(429);
+      expect(response.body.error).toContain('429');
+    });
+
+    it('should return 500 for generic API error', async () => {
+      const { chatModel } = require('../server/services/gemini');
+      jest.spyOn(chatModel, 'startChat').mockImplementationOnce(() => ({
+        sendMessage: jest.fn().mockRejectedValue(new Error('Generic failure'))
+      }));
+
+      const response = await request(app)
+        .post('/api/chat')
+        .send({ message: 'Random question not in KB', lang: 'en' });
+        
+      expect(response.status).toBe(500);
+      expect(response.body.error).toContain('Generic failure');
+    });
+  });
 });

@@ -6,7 +6,13 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "test": "jest"
+    "dev": "node --watch server/index.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "node -e \"const fs=require('fs'),{spawnSync}=require('child_process'),p=require('path');const c=(d)=>{fs.readdirSync(d).forEach(f=>{const fP=p.join(d,f);if(fs.statSync(fP).isDirectory())c(fP);else if(f.endsWith('.js')){const r=spawnSync('node',['--check',fP],{stdio:'inherit'});if(r.status!==0)process.exit(1);}})};c('server')\""
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
@@ -21,5 +27,20 @@
     "jest-axe": "^10.0.0",
     "jest-environment-jsdom": "^30.3.0",
     "supertest": "^7.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "server/**/*.js",
+      "!server/utils/constants.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 75,
+        "functions": 85,
+        "lines": 95,
+        "statements": 95
+      }
+    }
   }
 }

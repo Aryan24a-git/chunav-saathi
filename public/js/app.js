@@ -59,7 +59,11 @@ const App = {
   currentCardIndex: 0,
 
   /**
-   * Initializes the application, sets up event listeners, and renders the default view.
+   * Initializes the core application features, sets up global event listeners, 
+   * and renders the default starting view for the user.
+   * Calls initialization methods for Chat, Quiz, Flashcard, and Timeline modules.
+   * 
+   * @returns {void}
    */
   init() {
     this.Chat.init();
@@ -80,8 +84,11 @@ const App = {
   },
 
   /**
-   * Navigates to a specific page module and updates navigation state.
-   * @param {string} pageId - The ID of the page to show ('assistant', 'quiz', 'flashcard', 'timeline').
+   * Navigates the user to a specific module view and updates navigation button states.
+   * Toggles active classes and ARIA attributes for accessibility.
+   * 
+   * @param {string} pageId - The identifier of the page to display ('assistant', 'quiz', 'flashcard', 'timeline').
+   * @returns {void}
    */
   showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -95,7 +102,10 @@ const App = {
   },
 
   /**
-   * Toggles the application language between English ('en') and Hindi ('hi').
+   * Toggles the global application language between English ('en') and Hindi ('hi').
+   * Triggers a UI re-render to reflect the new localized text.
+   * 
+   * @returns {void}
    */
   toggleLanguage() {
     this.language = this.language === 'en' ? 'hi' : 'en';
@@ -103,7 +113,10 @@ const App = {
   },
 
   /**
-   * Translates the static UI elements based on the currently selected language.
+   * Translates static UI elements across the application based on the currently selected language.
+   * Updates text nodes, attributes, and placeholders from the TRANSLATIONS object.
+   * 
+   * @returns {void}
    */
   translateUI() {
     document.documentElement.lang = this.language;
@@ -134,7 +147,11 @@ const App = {
 
   Chat: {
     /**
-     * Initializes the Chat Assistant, sets up event listeners for inputs and suggestions.
+     * Initializes the Chat Assistant module.
+     * Sets up keyboard event listeners for input handling and populates default questions.
+     * Triggers the initial localized welcome message.
+     * 
+     * @returns {void}
      */
     init() {
       const input = document.getElementById('chat-input');
@@ -171,7 +188,10 @@ const App = {
     },
 
     /**
-     * Populates the dropdown menu with localized common questions.
+     * Populates the common questions dropdown menu.
+     * Uses the current application language state to render appropriate localized options.
+     * 
+     * @returns {void}
      */
     populateCommonQuestions() {
       const select = document.getElementById('common-questions-select');
@@ -229,8 +249,12 @@ const App = {
     },
 
     /**
-     * Sends a message to the backend API and processes the AI response.
-     * @param {string} text - The user's input message.
+     * Sends the user's message to the backend API and processes the AI response.
+     * Appends user bubbles, displays a loading indicator, handles API errors,
+     * and manages suggestions rendering after a reply is received.
+     * 
+     * @param {string} text - The user's input message content.
+     * @returns {Promise<void>} Resolves when the interaction flow is complete.
      */
     async sendMessage(text) {
       if (!text.trim()) return;
@@ -297,9 +321,11 @@ const App = {
     },
 
     /**
-     * Generates relevant follow-up questions based on the AI's reply.
-     * @param {string} reply - The AI's reply text.
-     * @returns {Array} An array of suggested question strings.
+     * Generates a context-aware list of follow-up questions based on the AI's response.
+     * Randomizes and limits the output to ensure variety.
+     * 
+     * @param {string} reply - The AI's latest response text.
+     * @returns {string[]} An array of 3-4 suggested question strings.
      */
     getSuggestions(reply) {
       const isHi = App.language === 'hi';
@@ -347,8 +373,10 @@ const App = {
     },
 
     /**
-     * Renders suggested question chips below the chat header.
-     * @param {Array} chips - An array of strings representing suggestions.
+     * Renders actionable suggestion chips below the chat header for quick questions.
+     * 
+     * @param {string[]} chips - An array of strings representing contextual suggestions.
+     * @returns {void}
      */
     renderSuggestions(chips) {
       const bar = document.getElementById('suggested-chips');
@@ -363,12 +391,16 @@ const App = {
     },
 
     /**
-     * Adds a chat bubble to the UI for either the user or the AI bot.
-     * @param {string} role - The sender ('user' or 'bot').
-     * @param {string} text - The message content.
-     * @param {Object} [progress=null] - Optional guided mode progress object.
-     * @param {Array} [buttons=[]] - Optional array of action button strings.
-     * @returns {HTMLElement} The created DOM element for the chat bubble.
+     * Injects a new chat bubble into the messaging interface.
+     * Handles rich text formatting, progress indicators, and actionable buttons.
+     * 
+     * @param {string} role - The sender of the message ('user' or 'bot').
+     * @param {string} text - The main textual content of the message.
+     * @param {Object} [progress=null] - Optional guided workflow progress tracking object.
+     * @param {number} progress.current - The current step number in a guided workflow.
+     * @param {number} progress.total - The total number of steps in a guided workflow.
+     * @param {string[]} [buttons=[]] - Optional array of strings to render as action buttons.
+     * @returns {HTMLElement} The created DOM element representing the chat bubble.
      */
     addBubble(role, text, progress = null, buttons = []) {
       const div = document.createElement('div');
@@ -431,8 +463,10 @@ const App = {
     },
 
     /**
-     * Appends a temporary loading indicator bubble to the chat container.
-     * @returns {HTMLElement} The created loading DOM element.
+     * Appends a temporary visual loading indicator bubble to the chat container.
+     * Used while waiting for an API response.
+     * 
+     * @returns {HTMLElement} The created DOM element acting as the loading indicator.
      */
     addLoadingBubble() {
       const div = document.createElement('div');
@@ -465,7 +499,10 @@ const App = {
     state: { questions: [], current: 0, score: 0, timer: null, timeLeft: 20 },
     
     /**
-     * Initializes the Quiz module by rendering available topics.
+     * Initializes the Quiz module.
+     * Prepares the category selection UI by rendering available quiz topics.
+     * 
+     * @returns {void}
      */
     init() {
       const topics = ['ECI', 'MCC', 'EVM/VVPAT', 'Forms', 'NOTA', 'Constituencies', 'History', 'Rights'];
@@ -480,8 +517,11 @@ const App = {
     },
 
     /**
-     * Fetches quiz data for a specific topic and starts the quiz flow.
-     * @param {string} topic - The selected quiz topic.
+     * Requests a set of quiz questions from the backend for a designated topic.
+     * Transitions the UI from topic selection to the active quiz interface.
+     * 
+     * @param {string} topic - The identifier for the chosen quiz subject.
+     * @returns {Promise<void>} Resolves when the quiz data is loaded and the first question is rendered.
      */
     async startQuiz(topic) {
       document.getElementById('topic-selector').style.display = 'none';
@@ -505,7 +545,10 @@ const App = {
     },
 
     /**
-     * Displays the current question and its options, starting the 20-second timer.
+     * Displays the current quiz question alongside its options.
+     * Restarts the 20-second countdown timer and updates the progress bar.
+     * 
+     * @returns {void}
      */
     showQuestion() {
       const q = this.state.questions[this.state.current];
@@ -542,8 +585,11 @@ const App = {
     },
 
     /**
-     * Handles user selection for a quiz question, checking accuracy and advancing.
-     * @param {number} idx - The index of the selected option (-1 for timeout).
+     * Processes a user's answer selection during a quiz.
+     * Validates accuracy, highlights options visually, and advances to the next question.
+     * 
+     * @param {number} idx - The index of the selected option, or -1 if the timer expired.
+     * @returns {void}
      */
     selectAnswer(idx) {
       clearInterval(this.state.timer);
@@ -565,7 +611,10 @@ const App = {
     },
 
     /**
-     * Displays the final score and personalized feedback at the end of the quiz.
+     * Presents the user's final quiz score.
+     * Hides the active quiz UI, displays personalized feedback, and offers navigation options.
+     * 
+     * @returns {void}
      */
     showScore() {
       document.getElementById('quiz-content').style.display = 'none';
@@ -588,7 +637,10 @@ const App = {
     },
 
     /**
-     * Resets the quiz view, returning to the topic selection screen.
+     * Resets the quiz module's UI state.
+     * Closes the score screen and brings back the initial topic selector.
+     * 
+     * @returns {void}
      */
     reset() {
         document.getElementById('quiz-score-screen').style.display = 'none';
@@ -600,7 +652,10 @@ const App = {
     state: { cards: [], current: 0, mastered: new Set(), studyAgain: new Set() },
 
     /**
-     * Initializes the Flashcard module, setting up UI event listeners and category filters.
+     * Initializes the Flashcard module.
+     * Collects all unique topics, renders category filter buttons, and establishes card interactions.
+     * 
+     * @returns {void}
      */
     init() {
       const topics = ['All', ...new Set(FLASHCARD_DATA.map(c => c.topic))];
@@ -626,8 +681,11 @@ const App = {
     },
 
     /**
-     * Filters the flashcard deck based on a specific topic.
-     * @param {string} topic - The topic to filter by (or 'All').
+     * Filters the total flashcard deck down to a specific category.
+     * Restarts viewing from the first card of the new subset.
+     * 
+     * @param {string} topic - The topic string to filter by, or 'All' to show all cards.
+     * @returns {void}
      */
     filterByTopic(topic) {
       this.state.cards = topic === 'All' ? [...FLASHCARD_DATA] : FLASHCARD_DATA.filter(c => c.topic === topic);
@@ -636,7 +694,10 @@ const App = {
     },
 
     /**
-     * Renders the current flashcard front and back content and updates progress stats.
+     * Updates the DOM to display the front and back of the current active flashcard.
+     * Also updates pagination indicators and mastery statistics.
+     * 
+     * @returns {void}
      */
     showCard() {
       const card = this.state.cards[this.state.current];
@@ -650,8 +711,11 @@ const App = {
     },
 
     /**
-     * Navigates forward or backward through the flashcard deck.
-     * @param {number} dir - Direction to move (1 for next, -1 for previous).
+     * Shifts the active flashcard view forwards or backwards.
+     * Loops continuously around the filtered deck bounds.
+     * 
+     * @param {number} dir - Direction index modifier (1 to go next, -1 to go previous).
+     * @returns {void}
      */
     move(dir) {
       this.state.current = (this.state.current + dir + this.state.cards.length) % this.state.cards.length;
@@ -659,7 +723,10 @@ const App = {
     },
 
     /**
-     * Marks the current flashcard as 'Mastered' and advances to the next card.
+     * Records the currently viewed flashcard as 'Mastered'.
+     * Removes it from the 'studyAgain' tracking list and navigates to the next card.
+     * 
+     * @returns {void}
      */
     markMastered() {
       const card = this.state.cards[this.state.current];
@@ -669,7 +736,10 @@ const App = {
     },
 
     /**
-     * Marks the current flashcard for review and advances to the next card.
+     * Flags the currently viewed flashcard for further study.
+     * Removes it from the 'mastered' state if present, and navigates to the next card.
+     * 
+     * @returns {void}
      */
     markStudyAgain() {
       const card = this.state.cards[this.state.current];
@@ -680,7 +750,10 @@ const App = {
 
   Timeline: {
     /**
-     * Initializes the Election Timeline, rendering all timeline nodes.
+     * Initializes the Election Timeline module.
+     * Renders interactive timeline nodes based on the static TIMELINE_DATA array.
+     * 
+     * @returns {void}
      */
     init() {
       const container = document.getElementById('timeline-nodes');
@@ -701,8 +774,11 @@ const App = {
     },
 
     /**
-     * Displays details for a specific stage of the election timeline.
-     * @param {number} index - The index of the selected timeline stage.
+     * Renders specific descriptive information for a particular stage in the election timeline.
+     * Toggles UI active states for visual feedback.
+     * 
+     * @param {number} index - The zero-based index of the stage within the TIMELINE_DATA array.
+     * @returns {void}
      */
     selectStage(index) {
       this.activeStage = index;
@@ -719,8 +795,11 @@ const App = {
     },
 
     /**
-     * Swaps to the Assistant page and automatically asks a question about the selected timeline stage.
-     * @param {string} stageName - The name of the timeline stage.
+     * Facilitates cross-module linking by redirecting the user to the Assistant page 
+     * and auto-submitting a query about the specified timeline stage.
+     * 
+     * @param {string} stageName - The name or title of the timeline stage to query the AI about.
+     * @returns {void}
      */
     askAboutStage(stageName) {
       App.showPage('assistant');
