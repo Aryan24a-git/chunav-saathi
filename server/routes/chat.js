@@ -43,7 +43,7 @@ router.post('/chat', async (req, res) => {
     const isHi = lang === 'hi';
 
     // Validation
-    if (!message || message.length > 500) {
+    if (!message || message.trim().length === 0 || message.length > 500) {
       return res.status(400).json({ error: "Message is required and must be under 500 characters." });
     }
 

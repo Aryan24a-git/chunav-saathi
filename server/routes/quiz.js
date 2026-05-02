@@ -170,22 +170,46 @@ router.post('/generate', async (req, res) => {
     return res.status(400).json({ error: 'Topic is required' });
   }
 
-  // Validate topic is in the known list
   if (!topics.includes(topic)) {
     return res.status(400).json({
       error: `Invalid topic: "${topic}". Valid topics are: ${topics.join(', ')}`
     });
   }
 
-  // Pick language dataset
+  // PRIMARY: Google Gemini AI generation
+  try {
+    if (quizModel) {
+      const prompt = `Generate 3 multiple choice questions about 
+"${topic}" related to Indian elections and democracy.
+Return ONLY a valid JSON array, no markdown, no backticks, no explanation.
+Format: [{"question":"...","options":["A","B","C","D"],"answer":0,"explanation":"..."}]
+Language: ${lang === 'hi' ? 'Hindi' : 'English'}`;
+
+      const result = await quizModel.generateContent(prompt);
+      const text = result.response.text()
+        .replace(/```json/g, '').replace(/```/g, '').trim();
+      const aiQuestions = JSON.parse(text);
+
+      if (Array.isArray(aiQuestions) && aiQuestions.length > 0) {
+        return res.json({
+          quiz: aiQuestions,
+          topic,
+          source: 'ai',
+          generatedAt: new Date().toISOString()
+        });
+      }
+    }
+  } catch (aiError) {
+    console.error('Gemini quiz generation failed, using static fallback:', 
+      aiError.message);
+  }
+
+  // FALLBACK: Static data
   const dataset = lang === 'hi' ? HINDI_QUIZ_DATA : QUIZ_DATA;
-
-  // Get questions for the topic (guaranteed to exist after validation above)
-  const questions = dataset[topic];
-
   return res.json({
-    quiz: questions,
+    quiz: dataset[topic],
     topic,
+    source: 'static',
     generatedAt: new Date().toISOString()
   });
 });
