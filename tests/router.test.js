@@ -16,6 +16,9 @@ jest.mock('@google/generative-ai', () => {
   };
 });
 
+// Set a dummy key so the API_KEY guard in chat.js passes and the mock is used
+process.env.GEMINI_API_KEY = 'test-key';
+
 const request = require('supertest');
 const app = require('../server/index');
 
