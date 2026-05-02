@@ -22,3 +22,8 @@
 
 ## Logging
 - No sensitive user information or API keys are logged to the console or any logging service.
+
+## AI Model Security
+- The application utilizes the `gemini-flash-latest` model.
+- Strict system prompts are implemented to ensure the AI remains on-topic and prevents prompt injection attacks or generation of inappropriate election-related content.
+- Generative AI is only used as a fallback after local knowledge base matching.

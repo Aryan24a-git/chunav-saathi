@@ -49,7 +49,7 @@ The app is built with **Bilingualism at its Core**:
 
 ## 📋 Assumptions Made
 - **Local-First Priority**: We assume that 90% of user queries revolve around common topics (Voter ID, EVM, Dates). By handling these locally, we reduce API dependency by ~90%.
-- **ECI 2024 Guidelines**: All logic and data follow the latest protocols established by the Election Commission of India for the 2024 General Elections.
+- **ECI 2026 Guidelines**: All logic and data follow the latest protocols established by the Election Commission of India for the 2026 State Elections.
 - **Mobile-First Accessibility**: The UI is designed to be claymorphic and touch-friendly, assuming most users will access it via mobile devices.
 - **No-Login Experience**: To maximize reach and privacy, the app assumes no user authentication is required; sessions are managed anonymously via IP/Session logic.
 
@@ -58,7 +58,7 @@ The app is built with **Bilingualism at its Core**:
 ## 🚀 Getting Started
 1.  **Clone**: `git clone [repo-url]`
 2.  **Install**: `npm install`
-3.  **Configure**: Create a `.env` file with your `API_KEY`.
+3.  **Configure**: Create a `.env` file with your `GEMINI_API_KEY`.
 4.  **Run**: `npm start`
 5.  **Access**: `http://localhost:8080`
 
