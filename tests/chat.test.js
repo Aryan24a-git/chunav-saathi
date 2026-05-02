@@ -115,9 +115,9 @@ describe('Chat API', () => {
 
   describe('Error Handling', () => {
     it('should return 429 for API quota error', async () => {
-      // Create a local mock for testing error paths since we mocked globally
-      const { chatModel } = require('../server/services/gemini');
-      jest.spyOn(chatModel, 'startChat').mockImplementationOnce(() => ({
+      // Since chatModel.startChat is already a jest.fn() from the global mock, 
+      // we can use mockImplementationOnce directly.
+      chatModel.startChat.mockImplementationOnce(() => ({
         sendMessage: jest.fn().mockRejectedValue(new Error('429 Quota exceeded'))
       }));
 
@@ -130,8 +130,7 @@ describe('Chat API', () => {
     });
 
     it('should return 500 for generic API error', async () => {
-      const { chatModel } = require('../server/services/gemini');
-      jest.spyOn(chatModel, 'startChat').mockImplementationOnce(() => ({
+      chatModel.startChat.mockImplementationOnce(() => ({
         sendMessage: jest.fn().mockRejectedValue(new Error('Generic failure'))
       }));
 

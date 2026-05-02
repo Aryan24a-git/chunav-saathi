@@ -17,11 +17,6 @@ const router = express.Router();
 const { chatModel } = require('../services/gemini');
 const { englishKnowledgeBase, hindiKnowledgeBase } = require('../data/knowledgeBase');
 
-// Safely get API Key (removing any accidental double quotes and hidden chars)
-const API_KEY = (process.env.GEMINI_API_KEY || '').replace(/"/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
-// We define a fallback test to check if the api key exists
-const model = API_KEY ? chatModel : null;
-
 const { SYSTEM_PROMPT } = require('../prompts/systemPrompt');
 
 // In-memory session store for guided steps (Credit-saving layer)
@@ -128,14 +123,7 @@ router.post('/chat', async (req, res) => {
     }
 
     // 3. Last Resort: Google Gemini AI
-    if (!model) {
-      return res.json({ 
-        reply: isHi ? "⚠️ AI सेवा अभी उपलब्ध नहीं है।" : "⚠️ AI service is unavailable.",
-        source: 'error'
-      });
-    }
-
-    const chat = model.startChat({
+    const chat = chatModel.startChat({
       history: history || [],
     });
 
