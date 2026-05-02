@@ -1,3 +1,8 @@
+# Google Cloud Services Used:
+# - Cloud Run: Serverless container hosting
+# - Cloud Build: CI/CD pipeline  
+# - Artifact Registry: Docker image storage
+# - Generative AI API: Gemini 1.5 Flash
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: 

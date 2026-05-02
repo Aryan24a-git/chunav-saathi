@@ -29,6 +29,18 @@ Chunav Saathi is a premium, bilingual AI assistant that provides instant, accura
 
 ---
 
+## ☁️ Google Services Integration
+
+| Service | SDK / API | Usage in Code |
+|---|---|---|
+| Gemini 1.5 Flash | @google/generative-ai | server/services/gemini.js |
+| Cloud Run | gcloud CLI | cloudbuild.yaml |
+| Cloud Build | cloudbuild.yaml | .github/workflows/deploy.yml |
+| Artifact Registry | Docker | cloudbuild.yaml |
+| Google Fonts | fonts.googleapis.com | public/index.html |
+
+---
+
 ## 🏗️ Architecture
 The application utilizes a **Hybrid Routing Architecture** focusing on speed, cost-efficiency, and accuracy.
 

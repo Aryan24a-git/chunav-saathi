@@ -1,10 +1,17 @@
 /**
+ * Google Service: Generative AI (Gemini 1.5 Flash)  
+ * SDK: @google/generative-ai
+ * Purpose: Dynamic quiz question generation
+ */
+
+/**
  * quiz.js
  * Handles the quiz generation endpoint for Chunav Saathi.
  * Returns static quiz data based on requested topic and language.
  */
 const express = require('express');
 const router = express.Router();
+const { quizModel } = require('../services/gemini');
 
 const QUIZ_DATA = {
   "ECI": [

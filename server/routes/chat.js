@@ -1,4 +1,12 @@
 /**
+ * Google Service: Generative AI (Gemini 1.5 Flash)
+ * SDK: @google/generative-ai
+ * Endpoint: generativelanguage.googleapis.com
+ * Purpose: Natural language understanding for 
+ * election-related queries
+ */
+
+/**
  * chat.js
  * Handles the AI chat endpoint for Chunav Saathi.
  * Uses a hybrid approach: local knowledge router first,
@@ -6,15 +14,13 @@
  */
 const express = require('express');
 const router = express.Router();
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { chatModel } = require('../services/gemini');
 const { englishKnowledgeBase, hindiKnowledgeBase } = require('../data/knowledgeBase');
 
-// Google AI Studio Configuration
 // Safely get API Key (removing any accidental double quotes and hidden chars)
 const API_KEY = (process.env.GEMINI_API_KEY || '').replace(/"/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
-const model = API_KEY
-  ? new GoogleGenerativeAI(API_KEY).getGenerativeModel({ model: 'gemini-flash-latest' })
-  : null;
+// We define a fallback test to check if the api key exists
+const model = API_KEY ? chatModel : null;
 
 const SYSTEM_PROMPT = `You are Chunav Saathi, an expert ONLY 
 on Indian elections. Answer questions about ECI, voter 
