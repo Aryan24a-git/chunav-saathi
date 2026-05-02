@@ -1,6 +1,8 @@
 {
   "name": "chunav-saathi",
   "version": "1.0.0",
+  "description": "Chunav Saathi is a premium, bilingual AI assistant designed to bridge the information gap in the Indian electoral process.",
+  "author": "SK FIRDOUS ALI",
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js"
