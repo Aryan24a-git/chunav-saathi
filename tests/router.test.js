@@ -1,20 +1,17 @@
-jest.mock('@google/generative-ai', () => {
-  return {
-    GoogleGenerativeAI: jest.fn().mockImplementation(() => {
-      return {
-        getGenerativeModel: jest.fn().mockReturnValue({
-          startChat: jest.fn().mockReturnValue({
-            sendMessage: jest.fn().mockResolvedValue({
-              response: {
-                text: jest.fn().mockReturnValue('Mocked AI response for unrecognized input')
-              }
-            })
-          })
-        })
-      };
+jest.mock('../server/services/gemini', () => ({
+  chatModel: {
+    startChat: jest.fn().mockReturnValue({
+      sendMessage: jest.fn().mockResolvedValue({
+        response: {
+          text: jest.fn().mockReturnValue('Mocked AI response for unrecognized input')
+        }
+      })
     })
-  };
-});
+  },
+  quizModel: {
+    generateContent: jest.fn().mockRejectedValue(new Error('403 Forbidden'))
+  }
+}));
 
 // Set a dummy key so the API_KEY guard in chat.js passes and the mock is used
 process.env.GEMINI_API_KEY = 'test-key';

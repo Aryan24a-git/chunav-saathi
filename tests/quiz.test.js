@@ -1,8 +1,23 @@
+jest.mock('../server/services/gemini', () => ({
+  chatModel: {
+    startChat: jest.fn().mockReturnValue({
+      sendMessage: jest.fn().mockResolvedValue({
+        response: { text: () => 'Mocked AI response' }
+      })
+    })
+  },
+  quizModel: {
+    generateContent: jest.fn().mockRejectedValue(
+      new Error('403 Forbidden - no API key in test env')
+    )
+  }
+}));
+
 const request = require('supertest');
 const app = require('../server/index');
 
 describe('Quiz API', () => {
-  it('should return 200 with questions array of length up to 5', async () => {
+  it('should return 200 with questions array and static source (fallback)', async () => {
     const response = await request(app)
       .post('/api/quiz/generate')
       .send({ topic: 'ECI' });
@@ -10,9 +25,8 @@ describe('Quiz API', () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty('quiz');
     expect(Array.isArray(response.body.quiz)).toBe(true);
-    // Based on the static data, we expect up to 5 questions (currently returns 2 for ECI).
-    // This satisfies the test constraint while not breaking on current data constraints.
-    expect(response.body.quiz.length).toBeLessThanOrEqual(5);
+    expect(response.body.source).toBe('static');
+    expect(response.body.quiz.length).toBeGreaterThan(0);
   });
 
   it('should return 400 for a missing topic', async () => {
