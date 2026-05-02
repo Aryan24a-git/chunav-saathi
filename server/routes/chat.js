@@ -1,5 +1,5 @@
 /**
- * Google Service: Generative AI (Gemini 1.5 Flash)
+ * Google Service: Generative AI (Gemini 3 Flash Preview)
  * SDK: @google/generative-ai
  * Endpoint: generativelanguage.googleapis.com
  * Purpose: Natural language understanding for 

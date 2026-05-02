@@ -33,7 +33,7 @@ Chunav Saathi is a premium, bilingual AI assistant that provides instant, accura
 
 | Service | SDK / API | Usage in Code |
 |---|---|---|
-| Gemini 1.5 Flash | @google/generative-ai | server/services/gemini.js |
+| Gemini 3 Flash Preview | @google/generative-ai | server/services/gemini.js |
 | Cloud Run | gcloud CLI | cloudbuild.yaml |
 | Cloud Build | cloudbuild.yaml | .github/workflows/deploy.yml |
 | Artifact Registry | Docker | cloudbuild.yaml |
@@ -56,7 +56,7 @@ The application utilizes a **Hybrid Routing Architecture** focusing on speed, co
 |---|---|---|
 | Backend | Node.js + Express | Lightweight, fast, and handles concurrent API requests efficiently. |
 | Frontend | Vanilla JS / HTML / CSS | Zero dependencies for maximum performance and easy maintenance. |
-| AI | Google Gemini 1.5 Flash | Provides rapid, cost-effective LLM fallback for complex user queries. |
+| AI | Google Gemini 3 Flash Preview | Provides rapid, cost-effective LLM fallback for complex user queries. |
 | Hosting | GCP Cloud Run | Serverless scaling, secure execution, and easy CI/CD integration. |
 | CI/CD | GitHub Actions + Cloud Build | Automated testing and deployment pipeline for continuous delivery. |
 | Container | Docker (Alpine) | Minimal attack surface and small image size for faster deployments. |
@@ -139,14 +139,14 @@ chunav-saathi/
 ---
 
 ## 🧠 How the AI Works
-The system first parses user input against a hardcoded knowledge base (Local Knowledge Router). If a match is found, it provides a zero-latency response. If no match is found, it falls back to the **Gemini 1.5 Flash API**, using a strict system prompt to ensure responses are factual, unbiased, and aligned with ECI guidelines.
+The system first parses user input against a hardcoded knowledge base (Local Knowledge Router). If a match is found, it provides a zero-latency response. If no match is found, it falls back to the **Gemini 3 Flash Preview API**, using a strict system prompt to ensure responses are factual, unbiased, and aligned with ECI guidelines.
 
 ---
 
 ## 🔮 Assumptions Made
 - Content based on 2024 Lok Sabha ECI guidelines
 - Hindi and English supported in Phase 1
-- Gemini 1.5 Flash used for speed and cost efficiency
+- Gemini 3 Flash Preview used for speed and cost efficiency
 
 ---
 
