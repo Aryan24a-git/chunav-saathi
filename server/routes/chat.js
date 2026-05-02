@@ -12,11 +12,9 @@ const { englishKnowledgeBase, hindiKnowledgeBase } = require('../data/knowledgeB
 // Google AI Studio Configuration
 // Safely get API Key (removing any accidental double quotes and hidden chars)
 const API_KEY = (process.env.GEMINI_API_KEY || '').replace(/"/g, '').replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
-const genAI = new GoogleGenerativeAI(API_KEY);
-
-const model = genAI.getGenerativeModel({
-  model: 'gemini-flash-latest'
-});
+const model = API_KEY
+  ? new GoogleGenerativeAI(API_KEY).getGenerativeModel({ model: 'gemini-flash-latest' })
+  : null;
 
 const SYSTEM_PROMPT = `You are Chunav Saathi, an expert ONLY 
 on Indian elections. Answer questions about ECI, voter 
@@ -131,7 +129,7 @@ router.post('/chat', async (req, res) => {
     }
 
     // 3. Last Resort: Google Gemini AI
-    if (!API_KEY || API_KEY === '') {
+    if (!model) {
       return res.json({ 
         reply: isHi ? "⚠️ AI सेवा अभी उपलब्ध नहीं है।" : "⚠️ AI service is unavailable.",
         source: 'error'
