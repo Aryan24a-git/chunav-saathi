@@ -18,6 +18,10 @@ jest.mock('@google/generative-ai', () => {
 
 const request = require('supertest');
 const app = require('../server/index');
+const { chatModel } = require('../server/services/gemini');
+
+// Set dummy API key for tests to ensure routes don't hit fallback
+process.env.GEMINI_API_KEY = 'test-key';
 
 describe('Chat API', () => {
   it('should return 200 with a reply field for a valid message', async () => {
