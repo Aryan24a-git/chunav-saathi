@@ -22,6 +22,11 @@ const INTENT_DATA = {
 };
 
 const englishKnowledgeBase = [
+  {
+    q: "hello",
+    keywords: ["namaste", "hello", "hi"],
+    a: "🗳️ **Namaste! I am Chunav Saathi**, your Election Assistant."
+  },
   // --- Common Questions & Definitions ---
   {
     q: "What is democracy?",

@@ -1,3 +1,8 @@
+/**
+ * quiz.js
+ * Handles the quiz generation endpoint for Chunav Saathi.
+ * Returns static quiz data based on requested topic and language.
+ */
 const express = require('express');
 const router = express.Router();
 
@@ -143,6 +148,14 @@ topics.forEach(t => {
 });
 
 // Create the Express Route
+/**
+ * Handles quiz generation requests
+ * @route POST /api/quiz/generate
+ * @param {Object} req.body
+ * @param {string} req.body.topic - Topic for the quiz
+ * @param {string} [req.body.lang='en'] - Language code ('en' or 'hi')
+ * @returns {Object} { quiz: Array, topic: string, generatedAt: string }
+ */
 router.post('/generate', async (req, res) => {
   const { topic, lang = 'en' } = req.body;
 
@@ -150,11 +163,18 @@ router.post('/generate', async (req, res) => {
     return res.status(400).json({ error: 'Topic is required' });
   }
 
+  // Validate topic is in the known list
+  if (!topics.includes(topic)) {
+    return res.status(400).json({
+      error: `Invalid topic: "${topic}". Valid topics are: ${topics.join(', ')}`
+    });
+  }
+
   // Pick language dataset
   const dataset = lang === 'hi' ? HINDI_QUIZ_DATA : QUIZ_DATA;
 
-  // Get questions for the topic or fallback to ECI
-  const questions = dataset[topic] || dataset["ECI"];
+  // Get questions for the topic (guaranteed to exist after validation above)
+  const questions = dataset[topic];
 
   return res.json({
     quiz: questions,

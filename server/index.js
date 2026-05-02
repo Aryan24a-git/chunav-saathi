@@ -16,7 +16,25 @@ const PORT = process.env.PORT || 8080;
 // Trust Cloud Run proxy for rate-limiting
 app.set('trust proxy', 1);
 
-app.use(cors());
+// Allowed origins: production Cloud Run URL + local dev
+const ALLOWED_ORIGINS = [
+  'https://chunav-saathi-692586675932.us-central1.run.app',
+  'http://localhost:8080',
+  'http://localhost:3000'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. curl, mobile apps, same-origin)
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy: origin ${origin} not allowed`));
+    }
+  },
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -27,6 +45,15 @@ app.use('/api', rateLimiter);
 app.use('/api', chatRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/tts', ttsRoutes);
+
+// Health check endpoint — required for load balancers and deployment verification
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'chunav-saathi',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Catch-all route to serve index.html
 app.get('*', (req, res) => {
@@ -40,6 +67,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something broke!', details: err.message });
 });
 
-app.listen(PORT, () => {
-  console.log(`Chunav Saathi running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Chunav Saathi running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

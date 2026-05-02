@@ -3,33 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0D1117">
+    <meta name="description" content="Learn about Indian elections with AI-powered quizzes and flashcards">
     <title>Chunav Saathi | Indian Election Assistant</title>
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header class="top-bar">
         <div class="nav-left">
             <span class="logo">🗳️ Chunav Saathi</span>
         </div>
         <div class="nav-right">
-            <button id="lang-toggle" class="btn-lang">हिं/EN</button>
+            <button id="lang-toggle" class="btn-lang" aria-label="Switch to Hindi">हिं/EN</button>
         </div>
     </header>
 
-    <nav class="bottom-dock">
-        <button class="nav-btn active" data-page="assistant" id="nav-assistant">🤖 Assistant</button>
-        <button class="nav-btn" data-page="quiz" id="nav-quiz">🧠 Quiz</button>
-        <button class="nav-btn" data-page="flashcard" id="nav-flashcard">🃏 Flashcards</button>
-        <button class="nav-btn" data-page="timeline" id="nav-timeline">📅 Timeline</button>
+    <nav aria-label="Primary Navigation">
+        <div class="bottom-dock" role="tablist">
+            <button class="nav-btn active" data-page="assistant" id="nav-assistant" role="tab" aria-selected="true">🤖 Assistant</button>
+            <button class="nav-btn" data-page="quiz" id="nav-quiz" role="tab" aria-selected="false">🧠 Quiz</button>
+            <button class="nav-btn" data-page="flashcard" id="nav-flashcard" role="tab" aria-selected="false">🃏 Flashcards</button>
+            <button class="nav-btn" data-page="timeline" id="nav-timeline" role="tab" aria-selected="false">📅 Timeline</button>
+        </div>
     </nav>
 
-    <main>
+    <main id="main-content">
         <!-- ASSISTANT PAGE -->
         <section id="page-assistant" class="page active">
             <div class="chat-container">
                 <div class="chat-header-actions">
-                    <select id="common-questions-select" class="btn-lang" style="width: 100%; margin-bottom: 0.5rem;">
+                    <select id="common-questions-select" class="btn-lang" style="width: 100%; margin-bottom: 0.5rem;" aria-label="Common questions">
                         <option value="" disabled selected>Select a Common Question...</option>
                         <!-- Options injected by JS -->
                     </select>
@@ -37,13 +42,13 @@
                 <div id="suggested-chips" class="suggested-bar">
                     <!-- Chips injected by JS -->
                 </div>
-                <div id="chat-messages" class="chat-messages">
+                <div id="chat-messages" class="chat-messages" role="log" aria-live="polite" aria-label="Chat messages">
                     <!-- Messages injected by JS -->
                 </div>
                 <div class="chat-input-bar">
                     <textarea id="chat-input" placeholder="Ask about Indian elections..." rows="1"></textarea>
 
-                    <button id="send-btn" class="btn-primary">Send</button>
+                    <button id="send-btn" class="btn-primary" aria-label="Send message">Send</button>
                 </div>
             </div>
         </section>
@@ -54,7 +59,7 @@
                 <!-- Topics injected by JS -->
             </div>
             <div id="quiz-content" style="display: none;">
-                <div class="quiz-progress">
+                <div class="quiz-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Quiz progress">
                     <div id="quiz-progress-inner" style="width: 0%;"></div>
                 </div>
                 <div class="quiz-card card">
@@ -80,13 +85,13 @@
                 </div>
             </div>
             <div class="flashcard-container">
-                <div class="flashcard" id="flashcard">
+                <div class="flashcard" id="flashcard" role="button" aria-label="Flip card to see answer" tabindex="0">
                     <div class="flashcard-inner">
                         <div class="flashcard-front card">
                             <h3>Question</h3>
                             <p id="flashcard-q"></p>
                         </div>
-                        <div class="flashcard-back card">
+                        <div class="flashcard-back card" aria-live="polite">
                             <h3>Answer</h3>
                             <p id="flashcard-a" style="color: var(--accent);"></p>
                         </div>
@@ -94,10 +99,10 @@
                 </div>
             </div>
             <div class="flashcard-controls">
-                <button id="fc-prev" class="btn-secondary">← Prev</button>
-                <button id="fc-mastered" class="btn-primary">✓ Got it</button>
-                <button id="fc-retry" class="btn-secondary">✗ Study Again</button>
-                <button id="fc-next" class="btn-primary">→ Next</button>
+                <button id="fc-prev" class="btn-secondary" aria-label="Previous flashcard">← Prev</button>
+                <button id="fc-mastered" class="btn-primary" aria-label="Mark as mastered">✓ Got it</button>
+                <button id="fc-retry" class="btn-secondary" aria-label="Mark for review">✗ Study Again</button>
+                <button id="fc-next" class="btn-primary" aria-label="Next flashcard">→ Next</button>
             </div>
         </section>
 
@@ -115,7 +120,7 @@
                 <div class="info-box" style="background: var(--surface2); padding: 1rem; border-radius: 8px;">
                     <strong>Key Fact:</strong> <span id="stage-fact"></span>
                 </div>
-                <button id="stage-ask-btn" class="btn-primary" style="margin-top: 1rem;">Ask Assistant about this →</button>
+                <button id="stage-ask-btn" class="btn-primary" style="margin-top: 1rem;" aria-label="Ask the assistant about this election stage">Ask Assistant about this →</button>
             </div>
         </section>
     </main>

@@ -1,3 +1,9 @@
+/**
+ * chat.js
+ * Handles the AI chat endpoint for Chunav Saathi.
+ * Uses a hybrid approach: local knowledge router first,
+ * falls back to Gemini AI for complex queries.
+ */
 const express = require('express');
 const router = express.Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -25,8 +31,13 @@ writes in.`;
 const activeGuidedSessions = {};
 
 /**
- * POST /api/chat
- * Handles conversational AI responses via Google AI Studio Gemini API
+ * Handles AI chat requests using the hybrid router
+ * @route POST /api/chat
+ * @param {Object} req.body
+ * @param {string} req.body.message - User's message (max 500 chars)
+ * @param {Array} req.body.history - Previous conversation turns
+ * @param {string} req.body.lang - Language code ('en' or 'hi')
+ * @returns {Object} { reply: string, progress?: Object, suggestions?: Array, timestamp: string }
  */
 router.post('/chat', async (req, res) => {
   try {
@@ -83,6 +94,11 @@ router.post('/chat', async (req, res) => {
     }
 
     // 2. Check Local Knowledge Base
+    /**
+     * Finds a match for the user's message in the local knowledge base.
+     * @param {Array} kb - The knowledge base array (English or Hindi)
+     * @returns {Object|null} The best matching knowledge base item or null
+     */
     const findLocalMatch = (kb) => {
       let bestMatch = null;
       let maxScore = 0;

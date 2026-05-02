@@ -1,3 +1,8 @@
+/**
+ * app.js
+ * Main frontend logic for Chunav Saathi.
+ * Handles UI interactions, API calls, state management, and translations.
+ */
 const FLASHCARD_DATA = [
   { id: 1, topic: 'ECI', question: 'What is the full form of ECI?', answer: 'Election Commission of India', difficulty: 'easy' },
   { id: 2, topic: 'ECI', question: 'Under which Article is ECI established?', answer: 'Article 324', difficulty: 'medium' },
@@ -53,6 +58,9 @@ const App = {
   currentQuiz: null,
   currentCardIndex: 0,
 
+  /**
+   * Initializes the application, sets up event listeners, and renders the default view.
+   */
   init() {
     this.Chat.init();
     this.Quiz.init();
@@ -71,21 +79,34 @@ const App = {
     this.translateUI();
   },
 
+  /**
+   * Navigates to a specific page module and updates navigation state.
+   * @param {string} pageId - The ID of the page to show ('assistant', 'quiz', 'flashcard', 'timeline').
+   */
   showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(`page-${pageId}`).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.page === pageId);
+      const isActive = btn.dataset.page === pageId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
     this.currentPage = pageId;
   },
 
+  /**
+   * Toggles the application language between English ('en') and Hindi ('hi').
+   */
   toggleLanguage() {
     this.language = this.language === 'en' ? 'hi' : 'en';
     this.translateUI();
   },
 
+  /**
+   * Translates the static UI elements based on the currently selected language.
+   */
   translateUI() {
+    document.documentElement.lang = this.language;
     const t = TRANSLATIONS[this.language];
     document.getElementById('nav-assistant').innerHTML = `🤖 ${t.navAssistant}`;
     document.getElementById('nav-quiz').innerHTML = `🧠 ${t.navQuiz}`;
@@ -94,6 +115,7 @@ const App = {
     document.getElementById('chat-input').placeholder = t.chatPlaceholder;
     document.getElementById('send-btn').textContent = t.btnSend;
     document.getElementById('lang-toggle').textContent = t.btnLang;
+    document.getElementById('lang-toggle').setAttribute('aria-label', this.language === 'en' ? 'Switch to Hindi' : 'Switch to English');
     
 
 
@@ -111,6 +133,9 @@ const App = {
   },
 
   Chat: {
+    /**
+     * Initializes the Chat Assistant, sets up event listeners for inputs and suggestions.
+     */
     init() {
       const input = document.getElementById('chat-input');
       input.addEventListener('keydown', (e) => {
@@ -145,6 +170,9 @@ const App = {
 
     },
 
+    /**
+     * Populates the dropdown menu with localized common questions.
+     */
     populateCommonQuestions() {
       const select = document.getElementById('common-questions-select');
       const questionsEN = [
@@ -200,6 +228,10 @@ const App = {
       });
     },
 
+    /**
+     * Sends a message to the backend API and processes the AI response.
+     * @param {string} text - The user's input message.
+     */
     async sendMessage(text) {
       if (!text.trim()) return;
       document.getElementById('chat-input').value = '';
@@ -264,6 +296,11 @@ const App = {
       container.scrollTop = container.scrollHeight;
     },
 
+    /**
+     * Generates relevant follow-up questions based on the AI's reply.
+     * @param {string} reply - The AI's reply text.
+     * @returns {Array} An array of suggested question strings.
+     */
     getSuggestions(reply) {
       const isHi = App.language === 'hi';
       const pool = {
@@ -309,6 +346,10 @@ const App = {
       return shuffled.slice(0, 4);
     },
 
+    /**
+     * Renders suggested question chips below the chat header.
+     * @param {Array} chips - An array of strings representing suggestions.
+     */
     renderSuggestions(chips) {
       const bar = document.getElementById('suggested-chips');
       bar.innerHTML = '';
@@ -321,10 +362,21 @@ const App = {
       });
     },
 
+    /**
+     * Adds a chat bubble to the UI for either the user or the AI bot.
+     * @param {string} role - The sender ('user' or 'bot').
+     * @param {string} text - The message content.
+     * @param {Object} [progress=null] - Optional guided mode progress object.
+     * @param {Array} [buttons=[]] - Optional array of action button strings.
+     * @returns {HTMLElement} The created DOM element for the chat bubble.
+     */
     addBubble(role, text, progress = null, buttons = []) {
       const div = document.createElement('div');
       div.className = role === 'user' ? 'bubble-user' : 'bubble-bot';
       
+      if (role === 'bot') {
+        div.setAttribute('aria-label', 'Chunav Saathi replied');
+      }
       let content = (role === 'bot' ? '🗳️ ' : '') + text;
       // Convert markdown-style bold to HTML
       content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -351,9 +403,18 @@ const App = {
           
           // Assign specific classes for special navigation buttons
           const lowBtn = btnText.toLowerCase();
-          if (lowBtn.includes('next') || lowBtn.includes('अगला')) btn.classList.add('btn-next');
-          if (lowBtn.includes('prev') || lowBtn.includes('पिछला')) btn.classList.add('btn-prev');
-          if (lowBtn.includes('stop') || lowBtn.includes('रुकें') || lowBtn.includes('रोकें')) btn.classList.add('btn-stop');
+          if (lowBtn.includes('next') || lowBtn.includes('अगला')) {
+            btn.classList.add('btn-next');
+            btn.setAttribute('aria-label', 'Next step');
+          }
+          if (lowBtn.includes('prev') || lowBtn.includes('पिछला')) {
+            btn.classList.add('btn-prev');
+            btn.setAttribute('aria-label', 'Previous step');
+          }
+          if (lowBtn.includes('stop') || lowBtn.includes('रुकें') || lowBtn.includes('रोकें')) {
+            btn.classList.add('btn-stop');
+            btn.setAttribute('aria-label', 'Stop guidance');
+          }
 
           btn.textContent = btnText;
           btn.onclick = (e) => {
@@ -369,6 +430,10 @@ const App = {
       return div;
     },
 
+    /**
+     * Appends a temporary loading indicator bubble to the chat container.
+     * @returns {HTMLElement} The created loading DOM element.
+     */
     addLoadingBubble() {
       const div = document.createElement('div');
       div.id = 'loading-bubble';
@@ -399,6 +464,9 @@ const App = {
   Quiz: {
     state: { questions: [], current: 0, score: 0, timer: null, timeLeft: 20 },
     
+    /**
+     * Initializes the Quiz module by rendering available topics.
+     */
     init() {
       const topics = ['ECI', 'MCC', 'EVM/VVPAT', 'Forms', 'NOTA', 'Constituencies', 'History', 'Rights'];
       const selector = document.getElementById('topic-selector');
@@ -411,6 +479,10 @@ const App = {
       });
     },
 
+    /**
+     * Fetches quiz data for a specific topic and starts the quiz flow.
+     * @param {string} topic - The selected quiz topic.
+     */
     async startQuiz(topic) {
       document.getElementById('topic-selector').style.display = 'none';
       document.getElementById('quiz-content').style.display = 'block';
@@ -432,6 +504,9 @@ const App = {
       }
     },
 
+    /**
+     * Displays the current question and its options, starting the 20-second timer.
+     */
     showQuestion() {
       const q = this.state.questions[this.state.current];
       if (!q) return this.showScore();
@@ -439,8 +514,9 @@ const App = {
       clearInterval(this.state.timer);
       this.state.timeLeft = 20;
       document.getElementById('quiz-timer').textContent = `${this.state.timeLeft}s`;
-      
-      document.getElementById('quiz-progress-inner').style.width = `${(this.state.current / this.state.questions.length) * 100}%`;
+      const progressVal = Math.round((this.state.current / this.state.questions.length) * 100);
+      document.getElementById('quiz-progress-inner').style.width = `${progressVal}%`;
+      document.getElementById('quiz-progress-inner').parentElement.setAttribute('aria-valuenow', progressVal);
       document.getElementById('quiz-question').textContent = q.question;
       
       const options = document.getElementById('quiz-options');
@@ -449,6 +525,8 @@ const App = {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.textContent = opt;
+        const letter = String.fromCharCode(65 + i);
+        btn.setAttribute('aria-label', `Option ${letter}: ${opt}`);
         btn.onclick = () => this.selectAnswer(i);
         options.appendChild(btn);
       });
@@ -463,6 +541,10 @@ const App = {
       }, 1000);
     },
 
+    /**
+     * Handles user selection for a quiz question, checking accuracy and advancing.
+     * @param {number} idx - The index of the selected option (-1 for timeout).
+     */
     selectAnswer(idx) {
       clearInterval(this.state.timer);
       const q = this.state.questions[this.state.current];
@@ -482,6 +564,9 @@ const App = {
       }, 1500);
     },
 
+    /**
+     * Displays the final score and personalized feedback at the end of the quiz.
+     */
     showScore() {
       document.getElementById('quiz-content').style.display = 'none';
       const screen = document.getElementById('quiz-score-screen');
@@ -502,6 +587,9 @@ const App = {
       `;
     },
 
+    /**
+     * Resets the quiz view, returning to the topic selection screen.
+     */
     reset() {
         document.getElementById('quiz-score-screen').style.display = 'none';
         document.getElementById('topic-selector').style.display = 'grid';
@@ -511,6 +599,9 @@ const App = {
   Flashcard: {
     state: { cards: [], current: 0, mastered: new Set(), studyAgain: new Set() },
 
+    /**
+     * Initializes the Flashcard module, setting up UI event listeners and category filters.
+     */
     init() {
       const topics = ['All', ...new Set(FLASHCARD_DATA.map(c => c.topic))];
       const filters = document.getElementById('flashcard-filters');
@@ -534,12 +625,19 @@ const App = {
       this.filterByTopic('All');
     },
 
+    /**
+     * Filters the flashcard deck based on a specific topic.
+     * @param {string} topic - The topic to filter by (or 'All').
+     */
     filterByTopic(topic) {
       this.state.cards = topic === 'All' ? [...FLASHCARD_DATA] : FLASHCARD_DATA.filter(c => c.topic === topic);
       this.state.current = 0;
       this.showCard();
     },
 
+    /**
+     * Renders the current flashcard front and back content and updates progress stats.
+     */
     showCard() {
       const card = this.state.cards[this.state.current];
       document.getElementById('flashcard').classList.remove('flipped');
@@ -551,11 +649,18 @@ const App = {
       document.getElementById('mastery-percent').textContent = `${mastery}% Mastered`;
     },
 
+    /**
+     * Navigates forward or backward through the flashcard deck.
+     * @param {number} dir - Direction to move (1 for next, -1 for previous).
+     */
     move(dir) {
       this.state.current = (this.state.current + dir + this.state.cards.length) % this.state.cards.length;
       this.showCard();
     },
 
+    /**
+     * Marks the current flashcard as 'Mastered' and advances to the next card.
+     */
     markMastered() {
       const card = this.state.cards[this.state.current];
       this.state.mastered.add(card.id);
@@ -563,6 +668,9 @@ const App = {
       this.move(1);
     },
 
+    /**
+     * Marks the current flashcard for review and advances to the next card.
+     */
     markStudyAgain() {
       const card = this.state.cards[this.state.current];
       this.state.studyAgain.add(card.id);
@@ -571,6 +679,9 @@ const App = {
   },
 
   Timeline: {
+    /**
+     * Initializes the Election Timeline, rendering all timeline nodes.
+     */
     init() {
       const container = document.getElementById('timeline-nodes');
       TIMELINE_DATA.forEach((stage, i) => {
@@ -589,6 +700,10 @@ const App = {
       this.selectStage(0);
     },
 
+    /**
+     * Displays details for a specific stage of the election timeline.
+     * @param {number} index - The index of the selected timeline stage.
+     */
     selectStage(index) {
       this.activeStage = index;
       const nodes = document.querySelectorAll('.timeline-node');
@@ -603,6 +718,10 @@ const App = {
       document.getElementById('stage-fact').textContent = stage.keyFact;
     },
 
+    /**
+     * Swaps to the Assistant page and automatically asks a question about the selected timeline stage.
+     * @param {string} stageName - The name of the timeline stage.
+     */
     askAboutStage(stageName) {
       App.showPage('assistant');
       const input = document.getElementById('chat-input');
